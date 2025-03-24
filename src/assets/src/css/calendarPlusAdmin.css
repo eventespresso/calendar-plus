@@ -1,0 +1,221 @@
+:root {
+	--cp-primary: hsl(237, 27%, 60%);
+	--cp-primary-txt: hsl(237, 35%, 85%);
+	--cp-primary-sat: hsl(237, 67.5%, 67.5%);
+
+	--cp-secondary: hsl(237, 35%, 67.5%);
+
+	--cp-white: hsl(57, 5%, 9%);
+	--cp-black: hsl(57, 5%, 91%);
+
+	--cp-menu-bg: hsl(237, 17%, 17%);
+	--cp-menu-bg-hvr: hsl(237, 27%, 27.5%);
+	--cp-menu-txt: hsl(237, 57%, 77%);
+
+	--cp-input-bg: var(--chakra-colors-gray-800);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--cp-primary: hsl(237, 27%, 60%);
+		--cp-primary-txt: hsl(237, 20%, 20%);
+		--cp-primary-sat: hsl(237, 67.5%, 67.5%);
+
+		--cp-secondary: hsl(237, 35%, 67.5%);
+
+		--cp-white: hsl(57, 5%, 91%);
+		--cp-black: hsl(57, 5%, 9%);
+
+		--cp-menu-bg: hsl(237, 27%, 40%);
+		--cp-menu-bg-hvr: hsl(237, 27%, 47.5%);
+		--cp-menu-txt: hsl(237, 60%, 99%);
+
+		--cp-input-bg: var(--chakra-colors-white);
+	}
+}
+
+/* WP admin menu */
+.toplevel_page_calendar-plus {
+	h1.calendar-plus-admin-heading {
+		color: var(--cp-primary);
+		font-family: system-ui, sans-serif !important;
+		font-size: 30px;
+		font-weight: 700;
+
+		span.plus {
+			font-size: 24px;
+			left: 1px;
+			margin-inline-end: 0.5rem;
+			position: relative;
+			top: 0.03125rem;
+		}
+	}
+
+	#wpbody-content {
+		padding-bottom: 0px;
+	}
+
+	#wpwrap,
+	#wpbody,
+	#wpbody-content,
+	#wpbody-content > .wrap {
+		height: 100%;
+	}
+}
+
+.chakra-select__icon-wrapper {
+	display: none !important;
+}
+.wrap {
+	margin: 0px;
+}
+#calendar-plus-admin {
+	height: 100%;
+	overflow: scroll;
+
+	> div {
+		height: 100%;
+		padding: 1rem 0;
+	}
+
+	.chakra-spinner {
+		color: var(--cp-primary-sat);
+		height: 2rem;
+		padding: 0;
+		width: 2rem;
+	}
+
+	h1.calendar-plus-admin-heading {
+		color: var(--cp-primary);
+	}
+
+	.chakra-heading {
+		color: var(--cp-primary);
+		font-weight: 700;
+		margin-block-end: 1rem;
+	}
+
+	.chakra-tabs {
+		.chakra-tabs__tablist {
+			background-color: var(--cp-menu-bg);
+			border-radius: 1rem;
+			margin-inline-end: 2rem;
+			padding: 1rem;
+			width: 16rem;
+
+			.chakra-tabs__tab {
+				border: none;
+				border-radius: 0.5rem;
+				color: var(--cp-menu-txt);
+				flex-wrap: nowrap;
+				justify-content: flex-start;
+
+				svg {
+					color: var(--cp-menu-txt);
+					font-size: large;
+					margin-inline-end: 1rem;
+				}
+
+				/* active state */
+				&[aria-selected='true'] {
+					background-color: var(--cp-menu-bg-hvr);
+				}
+
+				&:hover {
+					background-color: var(--cp-menu-bg-hvr);
+				}
+
+				&:focus {
+					box-shadow: none;
+				}
+
+				+ .chakra-tabs__tab {
+					margin-block-start: 1rem;
+				}
+			}
+		}
+	}
+
+	.cp-save-settings {
+		background-color: var(--cp-primary-sat);
+		width: 13rem;
+	}
+
+	.cp-tab__labels {
+		.chakra-input {
+			flex: unset;
+			width: 16rem;
+		}
+	}
+
+	.cp-tab__colors {
+		.chakra-form-control {
+			display: flex;
+			flex-wrap: nowrap;
+
+			label {
+				width: 16rem;
+			}
+
+			input[type='color'] {
+				border: none;
+				border-radius: 0.125rem;
+				height: 2rem;
+				margin-inline-end: 1rem;
+				width: 2rem;
+				padding: 0 0.0625rem;
+			}
+		}
+	}
+
+	.chakra-checkbox__control[data-checked] {
+		background: var(--cp-primary-sat);
+		border-color: var(--cp-primary-sat);
+	}
+
+	input[type='date'],
+	input[type='datetime-local'],
+	input[type='datetime'],
+	input[type='email'],
+	input[type='month'],
+	input[type='number'],
+	input[type='password'],
+	input[type='search'],
+	input[type='tel'],
+	input[type='text'],
+	input[type='time'],
+	input[type='url'],
+	input[type='week'],
+	textarea {
+		background: var(--cp-input-bg);
+		color: var(--cp-primary-txt);
+	}
+
+	.chakra-checkbox__control:focus,
+	input[type='checkbox']:focus,
+	input[type='color']:focus,
+	input[type='date']:focus,
+	input[type='datetime-local']:focus,
+	input[type='datetime']:focus,
+	input[type='email']:focus,
+	input[type='month']:focus,
+	input[type='number']:focus,
+	input[type='password']:focus,
+	input[type='radio']:focus,
+	input[type='search']:focus,
+	input[type='tel']:focus,
+	input[type='text']:focus,
+	input[type='time']:focus,
+	input[type='url']:focus,
+	input[type='week']:focus,
+	select:focus,
+	textarea:focus {
+		box-shadow: 0 0 0 0.25rem hsla(237, 67.5%, 67.5%, 50%);
+	}
+}
+#wpfooter {
+	position: relative !important;
+}
+
+
+/*# sourceMappingURL=calendarPlusAdmin.css.map*/
