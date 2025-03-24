@@ -1,0 +1,27 @@
+.calendar-plus-event-taxonomies {
+    align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    font-size: .875rem;
+    justify-content: space-between;
+    letter-spacing: .025rem;
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+
+    a + a {
+        margin-inline-start: 1rem;
+    }
+
+    .calendar-plus-event-tags a {
+        background-color: hsl(0 0% 50% / 10%);
+        padding: .125rem .675rem .25rem;
+        border-radius: .25rem;
+        font-size: .875rem;
+        letter-spacing: .025rem;
+        text-decoration: none;
+
+        &:hover {
+            background-color: hsl(0 0% 50% / 20%);
+        }
+    }
+}

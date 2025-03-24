@@ -1,0 +1,20 @@
+{
+	"name": "calendar-event",
+	"version": "0.1.0",
+	"description": "Calendar Event",
+	"author": "Event Espresso",
+	"license": "GPL-3",
+	"main": "build/index.js",
+	"scripts": {
+		"build": "node_modules/.bin/wp-scripts build --webpack-copy-php --webpack-src-dir=calendar-event --output-path=build",
+		"format": "node_modules/.bin/wp-scripts format",
+		"lint:css": "node_modules/.bin/wp-scripts lint-style",
+		"lint:js": "node_modules/.bin/wp-scripts lint-js",
+		"packages-update": "node_modules/.bin/wp-scripts packages-update",
+		"plugin-zip": "node_modules/.bin/wp-scripts plugin-zip",
+		"start": "node_modules/.bin/wp-scripts start --webpack-copy-php --webpack-src-dir=calendar-event --output-path=build"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.12.0"
+	}
+}

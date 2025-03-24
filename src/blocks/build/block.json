@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "title": "Events Calendar Plus Event",
+  "name": "events-calendar-plus/calendar-event",
+  "description": "Add event details like the start date and time to your calendar event",
+  "version": "0.1.0",
+  "apiVersion": 3,
+  "category": "widgets",
+  "example": {},
+  "icon": "calendar-alt",
+  "textdomain": "events_calendar_plus",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php",
+  "style": "file:./style-index.css",
+  "supports": {
+    "html": false,
+    "multiple": false
+  }
+}

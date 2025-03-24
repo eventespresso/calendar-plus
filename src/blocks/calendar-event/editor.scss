@@ -1,0 +1,30 @@
+/**
+ * The following styles get applied inside the editor only.
+ */
+.calendar-event-details {
+
+	--ee-stack-gap: 16px;
+	--ee-input-width: calc((100% - (var(--ee-stack-gap) * 2)) / 3);
+
+	.components-base-control {
+		width: var(--ee-input-width);
+
+		&.components-checkbox-control {
+			.components-base-control__field {
+				margin-block-start: 1.25rem;
+			}
+		}
+	}
+
+	.venue-address .components-base-control:last-child {
+		width: calc(var(--ee-input-width) * 2 + var(--ee-stack-gap));
+	}
+
+	.validation-error {
+		color: hsl(351 91% 65%);
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin-top: 0.5rem;
+	}
+}

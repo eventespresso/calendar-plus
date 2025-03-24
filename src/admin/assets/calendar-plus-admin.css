@@ -1,0 +1,59 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+/* WP ADMIN MENU */
+
+#menu-posts-calendar-event a {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+#menu-posts-calendar-event.wp-menu-open > a,
+#menu-posts-calendar-event.wp-menu-open a.current {
+    background-color: hsl(237, 27%, 40%) !important;
+}
+
+#menu-posts-calendar-event:not(.wp-menu-open) a:not(.current):hover,
+#menu-posts-calendar-event:not(.wp-menu-open) a:not(.current):focus,
+#menu-posts-calendar-event.wp-menu-open a:not(.current):not(.menu-top):hover,
+#menu-posts-calendar-event.wp-menu-open a:not(.current):not(.menu-top):focus {
+    color: hsl(237, 60%, 75%) !important;
+
+    div.wp-menu-image:before {
+        color: hsl(237, 60%, 75%) !important;
+    }
+}
+
+#menu-posts-calendar-event .wp-menu-name {
+    font-family: system-ui, sans-serif !important;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 7px 8px 2px 0 !important;
+
+    span {
+        font-size: 12px;
+        position: relative;
+        top: .03125rem;
+        left: 1px;
+    }
+}
+
+
+
+
+/* WP PLUGINS PAGE */
+
+.wp-admin.wp-core-ui.plugins-php .plugins {
+    tr[data-slug="events-calendar-plus"].active {
+        th {
+            background-color: hsl(237 50% 97.5%);
+            border-left-color: hsl(237 40% 70%);
+        }
+        td {
+            background-color: hsl(237 50% 97.5%);
+        }
+    }
+}
