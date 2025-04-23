@@ -1,0 +1,28 @@
+{
+  "files": {
+    "calendarPlus.css": "/static/css/calendarPlus.09932b37.css",
+    "calendarPlus.js": "/static/js/calendarPlus.b016bcc2.js",
+    "calendarPlus.js.map": "/static/js/calendarPlus.b016bcc2.js.map",
+    "calendarPlus.php": "/static/js/calendarPlus.e47a457f.asset.php",
+    "calendarPlusAdmin.css": "/static/css/calendarPlusAdmin.15bf528b.css",
+    "calendarPlusAdmin.js": "/static/js/calendarPlusAdmin.248f5ff5.js",
+    "calendarPlusAdmin.js.map": "/static/js/calendarPlusAdmin.248f5ff5.js.map",
+    "calendarPlusAdmin.php": "/static/js/calendarPlusAdmin.afa1fea7.asset.php",
+    "static/css/calendarPlus.09932b37.css.map": "/static/css/calendarPlus.09932b37.css.map",
+    "static/css/calendarPlusAdmin.15bf528b.css.map": "/static/css/calendarPlusAdmin.15bf528b.css.map",
+    "static/js/calendarPlus.b016bcc2.js.LICENSE.txt": "/static/js/calendarPlus.b016bcc2.js.LICENSE.txt",
+    "static/js/calendarPlusAdmin.248f5ff5.js.LICENSE.txt": "/static/js/calendarPlusAdmin.248f5ff5.js.LICENSE.txt"
+  },
+  "entrypoints": {
+    "calendarPlusAdmin": [
+      "static/css/calendarPlusAdmin.15bf528b.css",
+      "static/js/calendarPlusAdmin.248f5ff5.js",
+      "static/js/calendarPlusAdmin.afa1fea7.asset.php"
+    ],
+    "calendarPlus": [
+      "static/css/calendarPlus.09932b37.css",
+      "static/js/calendarPlus.b016bcc2.js",
+      "static/js/calendarPlus.e47a457f.asset.php"
+    ]
+  }
+}

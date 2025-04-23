@@ -2,6 +2,8 @@
 
 use EventEspresso\CalendarPlus\CalendarPlusPostMeta;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 $post_id   = get_the_ID();
 $post_meta = CalendarPlusPostMeta::forPostContent($post_id);
 [

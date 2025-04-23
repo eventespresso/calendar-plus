@@ -8,7 +8,7 @@
 	"category": "widgets",
 	"example": {},
 	"icon": "calendar-alt",
-	"textdomain": "events_calendar_plus",
+	"textdomain": "events-calendar-plus",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"render": "file:./render.php",

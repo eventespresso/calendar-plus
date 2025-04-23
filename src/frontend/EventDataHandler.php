@@ -26,14 +26,14 @@ class EventDataHandler
             $this->adapters = [];
             $adapters       = apply_filters(
                 'FHEE__EventEspresso_CalendarPlus_frontend_EventDataHandler__retrieveAdaptors__adapters',
-                glob(CALENDAR_PLUS_BASE_PATH . 'src/frontend/adaptors/*.php')
+                glob(EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/frontend/adaptors/*.php')
             );
             foreach ($adapters as $adapter) {
                 if (strpos($adapter, 'EventAdaptor') !== false) {
                     continue;
                 }
                 // if adapter is a local file, then convert to CalendarPlus FQCN
-                $adapter_class = strpos($adapter, CALENDAR_PLUS_BASE_PATH) === 0
+                $adapter_class = strpos($adapter, EVENTS_CALENDAR_PLUS_BASE_PATH) === 0
                     ? 'EventEspresso\\CalendarPlus\\frontend\\adaptors\\' . basename($adapter, '.php')
                     : $adapter;
                 if (class_exists($adapter_class)) {
@@ -75,7 +75,7 @@ class EventDataHandler
 
     private function loadExampleData(): array
     {
-        $example_data = wp_json_file_decode(CALENDAR_PLUS_BASE_PATH . 'src/frontend/assets/example-data.json');
+        $example_data = wp_json_file_decode(EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/frontend/assets/example-data.json');
         return $example_data ?: [];
     }
 

@@ -48,15 +48,14 @@ class Frontend
         $this->data_handler = $data_handler;
         $this->plugin_slug  = $plugin_slug;
         $this->version      = $version;
-        $this->assets_url   = CALENDAR_PLUS_BASE_URL . 'src/frontend/assets';
+        $this->assets_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/frontend/assets';
     }
 
 
     public function registerHooks(): void
     {
-        add_shortcode('CALENDAR_PLUS', [$this, 'calendarShortcode']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
-        add_action('wp_print_footer_scripts', [$this, 'printEventData'], 0);
+        add_shortcode('EVENTS_CALENDAR_PLUS', [$this, 'calendarShortcode']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueScripts'], 99);
         add_filter('the_content', [$this, 'postContent']);
     }
 
@@ -69,9 +68,6 @@ class Frontend
 
     public function enqueueScripts(): void
     {
-        wp_enqueue_style('calendarPlus');
-        wp_enqueue_script('calendarPlus');
-
         if (is_singular(CalendarPlusPostType::EVENT)) {
             wp_enqueue_style(
                 $this->plugin_slug,
@@ -80,21 +76,19 @@ class Frontend
                 $this->version
             );
         }
-    }
-
-
-    public function printEventData(): void
-    {
-        // and finally, print the JSON encoded data to the DOM
-        printf(
-            "
-    <script type='text/javascript'>
-        window.calendarPlusData = %s;
-        window.calendarPlusSettings = %s;
-    </script>
-    ",
-            $this->data_handler->getEventData(),
-            $this->config->getSettings()
+        // barista scripts and styles
+        wp_enqueue_style('calendarPlus');
+        wp_enqueue_script('calendarPlus');
+        // data for the above script
+        wp_localize_script(
+            'calendarPlus',
+            'calendarPlusSettings',
+            $this->config->getSettings(false)
+        );
+        wp_localize_script(
+            'calendarPlus',
+            'calendarPlusData',
+            $this->data_handler->getEventData(false)
         );
     }
 

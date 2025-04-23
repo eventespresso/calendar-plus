@@ -3,7 +3,7 @@
  * Plugin Name: Events Calendar Plus
  * Plugin URI:  https://www.eventespresso.com
  * Description: Events Calendar Plus (Calendar+) is the Universal Events Calendar for WordPress - display ALL the events!
- * Version:     1.0.1.001
+ * Version: 1.0.1
  * Author:      Event Espresso
  * Author URI:  https://www.eventespresso.com/
  * License:     GPLv3
@@ -26,22 +26,22 @@
  */
 
 // If this file is called directly, abort.
-if (! defined('WPINC')) {
+if (! defined('ABSPATH')) {
     die;
 }
 
 /*
  * The unique identifier of this plugin.
  */
-const CALENDAR_PLUS_SLUG = 'events-calendar-plus';
+const EVENTS_CALENDAR_PLUS_SLUG = 'events-calendar-plus';
 
 /**
  * The current version of the plugin. Uses semantic versioning.
  */
-const CALENDAR_PLUS_VERSION = '1.0.1.001';
+const EVENTS_CALENDAR_PLUS_VERSION = '1.0.1.008';
 
-define('CALENDAR_PLUS_BASE_PATH', plugin_dir_path(__FILE__));
-define('CALENDAR_PLUS_BASE_URL', plugin_dir_url(__FILE__));
+define('EVENTS_CALENDAR_PLUS_BASE_PATH', plugin_dir_path(__FILE__));
+define('EVENTS_CALENDAR_PLUS_BASE_URL', plugin_dir_url(__FILE__));
 
 if (version_compare(PHP_VERSION, '7.4', '>=')) {
     // composer autoloader
@@ -57,5 +57,5 @@ if (version_compare(PHP_VERSION, '7.4', '>=')) {
         ['EventEspresso\CalendarPlus\PluginActivation', 'deactivate']
     );
 
-    new EventEspresso\CalendarPlus\CalendarPlus();
+    new EventEspresso\CalendarPlus\CalendarPlus(EVENTS_CALENDAR_PLUS_SLUG, EVENTS_CALENDAR_PLUS_VERSION);
 }

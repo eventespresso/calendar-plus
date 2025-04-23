@@ -1,5 +1,5 @@
 WordPress plugin Events Calendar Plus Calendar Event
-bootstrapped in the /src/blocks/calendar-event-meta-data directory.
+bootstrapped in the /src/blocks/calendar directory.
 
 You can run several commands inside:
 

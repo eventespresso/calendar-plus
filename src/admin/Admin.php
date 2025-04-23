@@ -50,8 +50,8 @@ class Admin
         $this->data_handler = $data_handler;
         $this->plugin_slug  = $plugin_slug;
         $this->version      = $version;
-        $this->assets_url   = CALENDAR_PLUS_BASE_URL . 'src/admin/assets';
-        $this->templates    = CALENDAR_PLUS_BASE_PATH . 'src/admin/templates';
+        $this->assets_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/admin/assets';
+        $this->templates    = EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/admin/templates';
     }
 
 
@@ -59,14 +59,6 @@ class Admin
     {
         add_action('admin_menu', [$this, 'addMenuPage']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminScriptsAndStyles'], 99);
-
-        $request_uri = isset($_SERVER['REQUEST_URI'])
-            ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))
-            : '';
-        if (strpos($request_uri, 'page=events_calendar_plus_settings') !== false) {
-            add_action('admin_enqueue_scripts', [$this, 'printSettings'], 1);
-            add_action('admin_enqueue_scripts', [$this, 'enqueueSettingsScriptsAndStyles']);
-        }
     }
 
 
@@ -77,7 +69,7 @@ class Admin
             __('Calendar ✚  Settings', 'events-calendar-plus'),
             __('Calendar ✚  Settings', 'events-calendar-plus'),
             'manage_options',
-            'events_calendar_plus_settings',
+            'events-calendar-plus-settings',
             [$this, 'adminPageTemplate']
         );
     }
@@ -92,22 +84,6 @@ class Admin
     }
 
 
-    public function printSettings(): void
-    {
-        // Pass nonce and REST URL to React app
-        printf(
-            "
-    <script type='text/javascript'>
-        window.calendarPlusSettings = %s;
-        window.eventCategories = %s;
-    </script>
-    ",
-            $this->config->getSettings(),
-            $this->data_handler->getEventCategories()
-        );
-    }
-
-
     public function enqueueAdminScriptsAndStyles(): void
     {
         wp_enqueue_style(
@@ -116,12 +92,19 @@ class Admin
             [],
             $this->version
         );
-    }
-
-
-    public function enqueueSettingsScriptsAndStyles(): void
-    {
+        // barista scripts and styles
         wp_enqueue_style('calendarPlusAdmin');
         wp_enqueue_script('calendarPlusAdmin');
+        // data for the above script
+        wp_localize_script(
+            'calendarPlusAdmin',
+            'calendarPlusSettings',
+            $this->config->getSettings(false)
+        );
+        wp_localize_script(
+            'calendarPlusAdmin',
+            'eventCategories',
+            $this->data_handler->getEventCategories(false)
+        );
     }
 }

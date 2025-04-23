@@ -184,7 +184,7 @@ class CalendarPlusPostType
                 ],
                 'template'            => [
                     [
-                        CALENDAR_PLUS_SLUG . '/' . CalendarPlusPostType::EVENT,
+                        EVENTS_CALENDAR_PLUS_SLUG . '/' . CalendarPlusPostType::EVENT,
                         [
                             'lock' => [
                                 'remove' => true,

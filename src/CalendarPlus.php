@@ -25,8 +25,16 @@ use EventEspresso\CalendarPlus\frontend\Frontend;
  */
 class CalendarPlus
 {
-    public function __construct()
+
+    private string $plugin_slug;
+
+    private string $version;
+
+
+    public function __construct(string $plugin_slug, string $version)
     {
+        $this->plugin_slug = $plugin_slug;
+        $this->version     = $version;
         add_action('plugins_loaded', [$this, 'initialize']);
     }
 
@@ -42,51 +50,27 @@ class CalendarPlus
     {
         DateTimeHelper::initialize();
 
-        $i18n = new I18n();
-        $i18n->registerHooks();
-
         $custom_post = new CalendarPlusPostType();
         $custom_post->registerHooks();
 
         $blocks = new CalendarPlusBlocks($this->pluginSlug());
         $blocks->registerHooks();
 
-        if ($this->loadResourcesForRequest()) {
-            $config = new CalendarPlusConfig();
-            $config->initialize();
-            // load production assets
-            $assets = new Assets($this->version());
-            $assets->registerHooks();
+        $config = new CalendarPlusConfig();
+        $config->initialize();
+        // load production assets
+        $assets = new Assets($this->version());
+        $assets->registerHooks();
 
-            $api = new CalendarPlusAPI($config);
-            $api->registerHooks();
+        $api = new CalendarPlusAPI($config);
+        $api->registerHooks();
 
-            $data_handler = new EventDataHandler();
+        $data_handler = new EventDataHandler();
 
-            $module = is_admin()
-                ? new Admin($config, $data_handler, $this->pluginSlug(), $this->version())
-                : new Frontend($config, $data_handler, $this->pluginSlug(), $this->version());
-            $module->registerHooks();
-        }
-    }
-
-
-    private function loadResourcesForRequest(): bool
-    {
-        $action          = isset($_REQUEST['action'])
-            ? sanitize_text_field(wp_unslash($_REQUEST['action']))
-            : '';
-        $actions_to_skip = ['heartbeat', 'wp-remove-post-lock'];
-        if (in_array($action, $actions_to_skip, true)) {
-            return false;
-        }
-        $locale = isset($_REQUEST['_locale'])
-            ? sanitize_text_field(wp_unslash($_REQUEST['_locale']))
-            : '';
-        if ($locale && ! $action) {
-            return false;
-        }
-        return true;
+        $module = is_admin()
+            ? new Admin($config, $data_handler, $this->pluginSlug(), $this->version())
+            : new Frontend($config, $data_handler, $this->pluginSlug(), $this->version());
+        $module->registerHooks();
     }
 
 
@@ -98,7 +82,7 @@ class CalendarPlus
      */
     public function pluginSlug(): string
     {
-        return CALENDAR_PLUS_SLUG;
+        return $this->plugin_slug;
     }
 
 
@@ -111,7 +95,7 @@ class CalendarPlus
     {
         // appended time() to version number for local, dev, or staging environments so that assets are not cached
         return wp_get_environment_type() !== 'production'
-            ? CALENDAR_PLUS_VERSION . '.' . time()
-            : CALENDAR_PLUS_VERSION;
+            ? $this->version . '.' . time()
+            : $this->version;
     }
 }

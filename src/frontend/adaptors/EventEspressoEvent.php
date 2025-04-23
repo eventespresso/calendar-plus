@@ -17,6 +17,7 @@ use EE_State;
 
 /**
  * EventEspressoEvent
+ * retrieve Event Espresso EE_Event custom post types and convert to CalendarEvent
  *
  * @package     Event Espresso
  * @subpackage  EventEspresso\CalendarPlus\frontend\adaptors
@@ -163,7 +164,7 @@ class EventEspressoEvent implements EventAdaptor
             $is_all_day       = $event_meta['all_day'] ?? false;
             $event_class_name = $event_meta['class_name'] ?? '';
             $description      = $datetime->description() ?: $event->description();
-            
+
             $permalink = $event->get_permalink();
             $datetime_id = $datetime->id();
 

@@ -12,7 +12,7 @@ namespace EventEspresso\CalendarPlus\api;
  */
 class CalendarPlusConfig
 {
-    const OPTION_NAME    = 'calendar_plus_settings';
+    const OPTION_NAME    = 'events_calendar_plus_settings';
 
     const UPDATE_FAILED  = -1;
 

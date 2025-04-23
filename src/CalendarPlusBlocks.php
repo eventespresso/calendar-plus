@@ -2,10 +2,6 @@
 
 namespace EventEspresso\CalendarPlus;
 
-use EventSmart\SaasSolution\core\CPTs\CustomPostTypes;
-use WP_Block_Patterns_Registry;
-use WP_Post;
-
 /**
  * Blocks
  *
@@ -16,9 +12,6 @@ use WP_Post;
  */
 class CalendarPlusBlocks
 {
-    private const BLOCK_PATTERN_POST_CONTENT = CALENDAR_PLUS_SLUG . '/' . CalendarPlusPostType::EVENT . '-content';
-
-
     private string $build_path;
 
     private string $build_url;
@@ -32,8 +25,8 @@ class CalendarPlusBlocks
      */
     public function __construct(string $plugin_slug)
     {
-        $this->build_path  = CALENDAR_PLUS_BASE_PATH . 'src/blocks/build/';
-        $this->build_url   = CALENDAR_PLUS_BASE_URL . 'src/blocks/build/';
+        $this->build_path  = EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/blocks/build/';
+        $this->build_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/blocks/build/';
         $this->plugin_slug = $plugin_slug;
     }
 
@@ -85,7 +78,7 @@ class CalendarPlusBlocks
             $this->build_url . 'config.js',
             [...$asset_file['dependencies'], 'wp-edit-post'],
             wp_get_environment_type() !== 'production'
-                ? CALENDAR_PLUS_VERSION . '.' . time()
+                ? EVENTS_CALENDAR_PLUS_VERSION . '.' . time()
                 : $asset_file['version'],
             ['in_footer' => true]
         );

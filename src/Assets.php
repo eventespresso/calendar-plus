@@ -76,7 +76,7 @@ class Assets
      */
     public function url(string $path): string
     {
-        return $this->barista_url ? $this->barista_url . $path : CALENDAR_PLUS_BASE_URL . $path;
+        return $this->barista_url ? $this->barista_url . $path : EVENTS_CALENDAR_PLUS_BASE_URL . $path;
     }
 
 
@@ -114,7 +114,7 @@ class Assets
      */
     protected function assetsPathBase(): string
     {
-        return $this->barista_dir ?: CALENDAR_PLUS_BASE_PATH;
+        return $this->barista_dir ?: EVENTS_CALENDAR_PLUS_BASE_PATH;
     }
 
 
@@ -303,7 +303,7 @@ class Assets
             $handle = $this->assetHandle($entry_point);
             if (! empty($asset_files[ $entry_point . Assets::FILE_EXT_CSS ])) {
                 $css_relative_path = $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_CSS ];
-                $css_absolute_path = CALENDAR_PLUS_BASE_PATH . $css_relative_path;
+                $css_absolute_path = EVENTS_CALENDAR_PLUS_BASE_PATH . $css_relative_path;
 
                 if (file_exists($css_absolute_path)) {
                     $this->overrideStyle(

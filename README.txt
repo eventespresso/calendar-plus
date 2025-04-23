@@ -1,11 +1,11 @@
 === Events Calendar Plus ===
 
-Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr
+Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
 Stable tag: 1.0.1
 Requires at least: 6.5
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,7 +15,7 @@ Display a beautiful events calendar with customizable views, coloring, filtering
 == Description ==
 Create and manage a stunning event calendar on your WordPress site with Calendar+. Customize colors, text, views (month/day/week/list/agenda), and date formats—all fully optimized for mobile.
 
-Calendar+ is brought to you by the makers of [Event Espresso](https://eventespresso.com) and [Event Smart](https://eventsmart.com). <strong>To enter event details like venues, categories, and featured images, you’ll need [Event Espresso Decaf](https://wordpress.org/plugins/event-espresso-decaf).
+Calendar+ is brought to you by the makers of [Event Espresso](https://eventespresso.com) and [Event Smart](https://eventsmart.com). <strong>To create tickets, registrations, accept payments, and more use [Event Espresso Decaf](https://wordpress.org/plugins/event-espresso-decaf) or [Event Espresso Regular](https://eventespresso.com).
 
 Calendar+ with Event Espresso Decaf offers powerful features that other plugins charge for, making it an ideal solution for event organizers—whether you need a simple event calendar or a growing event schedule.
 
@@ -44,12 +44,16 @@ Whether your event calendar is new and growing or your events calendar is big an
 
 ## ☕️ Event Espresso Decaf Includes:
 
+✔️ Sell tickets
+✔️ Sell registrations
+✔️ Collect basic contact information for attendees
+✔️ Accept payments with PayPal directly into your own PayPal account
 ✔️ Saved venues
 ✔️ Widget: Upcoming events list
 ✔️ Event Taxonomies (Categories & Tags)
 ✔️ Google Calendar and iCal exporting
 ✔️ WP REST API endpoints
-✔️ Tested on the latest versions of WordPress and major theme frameworks such as Avada, Divi, Enfold, Genesis, and many more.
+✔️ Tested on the latest versions of WordPress and major theme frameworks such as Avada, Divi, Enfold, Genesis, and many more
 ✔️ Extensive template tags for customization
 ✔️ Hooks & filters galore
 ✔️ Debug mode for developers
@@ -60,7 +64,7 @@ Whether your event calendar is new and growing or your events calendar is big an
 ✔️ Collect attendee information for each event ticket or registration sold
 ✔️ Sell tickets and registrations to groups
 ✔️ Create multiple dates for the same event
-✔️ Create custom registration forms
+✔️ Create custom registration forms for each attendee, and multiple attendees
 ✔️ Create conditional registration form questions
 ✔️ Ask specific questions in the registration form depending on the attendees choose
 ✔️ Distribute digital tickets
@@ -73,7 +77,7 @@ Whether your event calendar is new and growing or your events calendar is big an
 
 == 🛟 Documentation ==
 
-All of our documentation can be found in [our Knowledgebase](https://calendarplus.io).
+See the "Installation" tab above, and all of our documentation can be found in [the Calendar+ website](https://calendarplus.io).
 
 == Help ==
 
@@ -81,11 +85,11 @@ If you need help, post your questions in the [WordPress.org forum](https://wordp
 
 Our Free Plugins:
 
-☕️ [Event Espresso](https://wordpress.org/plugins/event-tickets/)
+☕️ [Event Espresso Decaf](https://wordpress.org/plugins/event-tickets/)
 
 Our Premium Plugins and Services:
 
-☕️ [Events Espresso](https://eventespresso.com)
+☕️ [Event Espresso](https://eventespresso.com)
 🎓 [Event Smart](https://eventsmart.com) (service)
 
 == Installation ==
@@ -99,7 +103,11 @@ Manual Installation:
 - Go to Plugins > Add New > Upload Plugin, select the ZIP file, and click Install Now
 - Activate the plugin
 
+Display the Calendar+ Calendar:
+To display a calendar, add the <strong>[EVENTS_CALENDAR_PLUS]</strong> shortcode on any WordPress page or post.
+
 That's it! Just configure your settings as you see fit, and you're on your way to creating events in style.
+
 == Screenshots ==
 
 1. Month View
@@ -172,6 +180,10 @@ You'll want to use [Event Espresso](https://wordpress.org/plugins/event-espresso
 = Can I have more than one calendar on my site? =
 
 Yes. You can use event categories or tags to create calendar views that only display certain events. For example, you could create a direct link to a calendar view that only shows events categorized as Fitness, Fundraisers, etc.
+
+== External Services ==
+
+This plugin connects to the Google Maps API and sends details about your events if users choose to view directions to an event. The Google Maps API Terms of Service can be found [here](https://cloud.google.com/maps-platform/terms/).
 
 == Upgrade Notice ==
 
