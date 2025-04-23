@@ -1,0 +1,53 @@
+{
+  "files": {
+<<<<<<< HEAD
+    "calendarPlus.css": "/static/css/calendarPlus.09932b37.css",
+    "calendarPlus.js": "/static/js/calendarPlus.5ce22103.js",
+    "calendarPlus.js.map": "/static/js/calendarPlus.5ce22103.js.map",
+    "calendarPlus.php": "/static/js/calendarPlus.8b4d475a.asset.php",
+    "calendarPlusAdmin.css": "/static/css/calendarPlusAdmin.15bf528b.css",
+    "calendarPlusAdmin.js": "/static/js/calendarPlusAdmin.5fb61c79.js",
+    "calendarPlusAdmin.js.map": "/static/js/calendarPlusAdmin.5fb61c79.js.map",
+    "calendarPlusAdmin.php": "/static/js/calendarPlusAdmin.966782a5.asset.php",
+    "static/css/calendarPlus.09932b37.css.map": "/static/css/calendarPlus.09932b37.css.map",
+    "static/css/calendarPlusAdmin.15bf528b.css.map": "/static/css/calendarPlusAdmin.15bf528b.css.map",
+    "static/js/calendarPlus.5ce22103.js.LICENSE.txt": "/static/js/calendarPlus.5ce22103.js.LICENSE.txt",
+    "static/js/calendarPlusAdmin.5fb61c79.js.LICENSE.txt": "/static/js/calendarPlusAdmin.5fb61c79.js.LICENSE.txt"
+=======
+    "calendarPlus.css": "/static/css/calendarPlus.9edc7fc9.css",
+    "calendarPlus.js": "/static/js/calendarPlus.278ba839.js",
+    "calendarPlus.js.map": "/static/js/calendarPlus.278ba839.js.map",
+    "calendarPlus.php": "/static/js/calendarPlus.e03e84ab.asset.php",
+    "calendarPlusAdmin.css": "/static/css/calendarPlusAdmin.15bf528b.css",
+    "calendarPlusAdmin.js": "/static/js/calendarPlusAdmin.aa1f5915.js",
+    "calendarPlusAdmin.js.map": "/static/js/calendarPlusAdmin.aa1f5915.js.map",
+    "calendarPlusAdmin.php": "/static/js/calendarPlusAdmin.40039e55.asset.php",
+    "static/css/calendarPlus.9edc7fc9.css.map": "/static/css/calendarPlus.9edc7fc9.css.map",
+    "static/css/calendarPlusAdmin.15bf528b.css.map": "/static/css/calendarPlusAdmin.15bf528b.css.map",
+    "static/js/calendarPlus.278ba839.js.LICENSE.txt": "/static/js/calendarPlus.278ba839.js.LICENSE.txt",
+    "static/js/calendarPlusAdmin.aa1f5915.js.LICENSE.txt": "/static/js/calendarPlusAdmin.aa1f5915.js.LICENSE.txt"
+>>>>>>> da884469b1 (Deployed from eventespresso/barista@fdabc9dc5c9f0b04815424e727e24a14bc606863)
+  },
+  "entrypoints": {
+    "calendarPlusAdmin": [
+      "static/css/calendarPlusAdmin.15bf528b.css",
+<<<<<<< HEAD
+      "static/js/calendarPlusAdmin.5fb61c79.js",
+      "static/js/calendarPlusAdmin.966782a5.asset.php"
+    ],
+    "calendarPlus": [
+      "static/css/calendarPlus.09932b37.css",
+      "static/js/calendarPlus.5ce22103.js",
+      "static/js/calendarPlus.8b4d475a.asset.php"
+=======
+      "static/js/calendarPlusAdmin.aa1f5915.js",
+      "static/js/calendarPlusAdmin.40039e55.asset.php"
+    ],
+    "calendarPlus": [
+      "static/css/calendarPlus.9edc7fc9.css",
+      "static/js/calendarPlus.278ba839.js",
+      "static/js/calendarPlus.e03e84ab.asset.php"
+>>>>>>> da884469b1 (Deployed from eventespresso/barista@fdabc9dc5c9f0b04815424e727e24a14bc606863)
+    ]
+  }
+}

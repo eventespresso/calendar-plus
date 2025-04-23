@@ -8,7 +8,7 @@ namespace EventEspresso\CalendarPlus;
  * @package     Event Espresso
  * @subpackage  src
  * @author      Brent Christensen
- * @since       $VID:$
+ * @since       1.0.2
  */
 class CalendarPlusBlocks
 {

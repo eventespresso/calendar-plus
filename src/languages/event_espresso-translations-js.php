@@ -19,6 +19,12 @@ $generated_i18n_strings = array(
 	// Reference: domains/calendarPlus/frontend/src/components/calendar/toolbar/filters/LocationFilters.tsx:55
 	__( 'Select City', 'event_espresso' ),
 
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/toolbar/filters/RenderFilters.tsx:134
+	__( 'Apply Filters', 'event_espresso' ),
+
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/toolbar/filters/RenderFilters.tsx:146
+	__( 'Reset', 'event_espresso' ),
+
 	// Reference: domains/calendarPlus/frontend/src/components/calendar/toolbar/filters/SearchFilter.tsx:36
 	__( 'Search events', 'event_espresso' )
 );
