@@ -43,7 +43,9 @@ class EventEspressoEvent implements EventAdaptor
     private function loadEspressoEvents(): array
     {
         if ($this->events === null) {
-            $this->events = EEM_Event::instance()->get_all();
+            $this->events = EEM_Event::instance()->get_all(
+                [EEM_Event::instance()->set_where_conditions_for_status([])]
+            );
         }
         return $this->events;
     }

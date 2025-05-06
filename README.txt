@@ -81,7 +81,7 @@ If you need help, post your questions in the [WordPress.org forum](https://wordp
 
 Our Free Plugins:
 
-☕️ [Event Espresso](https://wordpress.org/plugins/event-tickets/)
+☕️ [Event Espresso](https://wordpress.org/plugins/event-espresso-decaf)
 
 Our Premium Plugins and Services:
 
