@@ -2,6 +2,7 @@
 
 namespace EventEspresso\CalendarPlus;
 
+use WP_Dependencies;
 use WP_Scripts;
 use WP_Styles;
 use _WP_Dependency;
@@ -48,11 +49,10 @@ class Assets
         if ($this->isWordPressThemesAdmin()) {
             return;
         }
-
         add_action('wp_default_scripts', [$this, 'registerScripts']);
-        add_action('wp_default_styles', [$this, 'registerPackagesStyles']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueueAdminScriptsAndStyles']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueuePublicScriptsAndStyles']);
+        add_action('wp_default_styles', [$this, 'registerStyles']);
+        add_action('admin_enqueue_scripts', [$this, 'registerDependencies'], 0);
+        add_action('wp_enqueue_scripts', [$this, 'registerDependencies'], 0);
     }
 
 
@@ -154,94 +154,66 @@ class Assets
 
 
     /**
-     * Registers a script according to `wp_register_script`. Honors this request by
-     * reassigning internal dependency properties of any script handle already
-     * registered by that name. It does not deregister the original script, to
-     * avoid losing inline scripts which may have been attached.
-     *
-     * @param WP_Scripts       $scripts   WP_Scripts instance.
-     * @param string           $handle    Name of the script. Should be unique.
-     * @param string           $src       Full URL of the script, or path of the script relative to the WordPress root
-     *                                    directory.
-     * @param array            $deps      Optional. An array of registered script handles this script depends on.
-     *                                    Default empty array.
-     * @param string|bool|null $ver       Optional. String specifying script version number, if it has one, which is
-     *                                    added to the URL as a query string for cache busting purposes. If version is
-     *                                    set to false, a version number is automatically added equal to current
-     *                                    installed WordPress version. If set to null, no version is added.
-     * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the
-     *                                    <head>. Default 'false'.
+     * @param WP_Dependencies  $assets
+     * @param string           $handle
+     * @param string           $asset_path
+     * @param string[]         $deps
+     * @param string|bool|null $ver
+     * @param array|string     $args
+     * @return _WP_Dependency|null
+     * @since 1.0.4
      */
-    protected function overrideScript(
-        WP_Scripts $scripts,
+    private function addOrUpdateAsset(
+        WP_Dependencies $assets,
         string $handle,
-        string $src,
-        array $deps = [],
-        $ver = false,
-        bool $in_footer = false
-    ): void {
-        $script = $scripts->query($handle);
-        if ($script instanceof _WP_Dependency) {
-            $script->src  = $src;
-            $script->deps = $deps;
-            $script->ver  = $ver;
-            $script->args = $in_footer;
+        string $asset_path,
+        array $deps,
+        $ver,
+        $args = null
+    ): ?_WP_Dependency {
+        if (! file_exists($this->assetsPathBase() . $asset_path)) {
+            error_log(
+                sprintf(
+                    'Asset %s with file path %s does not exist. Verify that the file exists.',
+                    $handle,
+                    $asset_path
+                )
+            );
+            return null;
+        }
+        $src   = $this->url($asset_path);
+        $asset = $assets->query($handle);
+        if ($asset instanceof _WP_Dependency) {
+            $asset->src  = $src;
+            $asset->deps = $deps;
+            $asset->ver  = $ver;
+            $asset->args = $args;
         } else {
-            $scripts->add($handle, $src, $deps, $ver, $in_footer);
-            $script = $scripts->query($handle);
+            $assets->add($handle, $src, $deps, $ver, $args);
+            $asset = $assets->query($handle);
         }
-
-        if ($script instanceof _WP_Dependency) {
-            /*
-            * The script's `group` designation is an indication of whether it is
-            * to be printed in the header or footer. The behaviour here defers to
-            * the arguments as passed. Specifically, group data is not assigned
-            * for a script unless it is designated to be printed in the footer.
-            */
-            // See: `wp_register_script` .
-            unset($script->extra['group']);
-            if ($in_footer) {
-                $script->add_data('group', 1);
+        if ($asset instanceof _WP_Dependency) {
+            if (isset($args['in_footer']) && $args['in_footer']) {
+                /*
+                * The script's `group` designation is an indication of whether it is
+                * to be printed in the header or footer. The behaviour here defers to
+                * the arguments as passed. Specifically, group data is not assigned
+                * for a script unless it is designated to be printed in the footer.
+                * See: `wp_register_script` .
+                */
+                unset($asset->extra['group']);
+                $asset->add_data('group', 1);
             }
-            $this->assets['js'][ $handle ] = $script;
+            return $asset;
         }
-    }
-
-
-    /**
-     * Registers a style according to `wp_register_style`. Honors this request by
-     * de-registering any style by the same handler before registration.
-     *
-     * @param WP_Styles        $styles WP_Styles instance.
-     * @param string           $handle Name of the stylesheet. Should be unique.
-     * @param string           $src    Full URL of the stylesheet, or path of the stylesheet relative to the WordPress
-     *                                 root directory.
-     * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on.
-     *                                 Default empty array.
-     * @param string|bool|null $ver    Optional. String specifying stylesheet version number, if it has one, which is
-     *                                 added to the URL as a query string for cache busting purposes. If version is set
-     *                                 to false, a version number is automatically added equal to current installed
-     *                                 WordPress version. If set to null, no version is added.
-     * @param string           $media  Optional. The media for which this stylesheet has been defined.
-     *                                 Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media
-     *                                 queries like
-     *                                 '(orientation: portrait)' and '(max-width: 640px)'.
-     *
-     */
-    protected function overrideStyle(
-        WP_Styles $styles,
-        string $handle,
-        string $src,
-        array $deps = [],
-        $ver = false,
-        string $media = 'all'
-    ): void {
-        $style = $styles->query($handle);
-        if ($style instanceof _WP_Dependency) {
-            $styles->remove($handle);
-        }
-        $styles->add($handle, $src, $deps, $ver, $media);
-        $this->assets['css'][ $handle ] = $styles->query($handle);
+        error_log(
+            sprintf(
+                'Failed to register asset %s with src %s. Verify that the file exists.',
+                $handle,
+                $src
+            )
+        );
+        return null;
     }
 
 
@@ -253,38 +225,38 @@ class Assets
      */
     public function registerScripts(WP_Scripts $scripts): void
     {
+        remove_action('wp_default_scripts', [$this, 'registerScripts']);
         $assets_path  = $this->assetsPathBase() . $this->assetsPath();
         $asset_files  = $this->getManifest();
         $entry_points = $this->getEntryPoints();
 
         foreach ($entry_points as $entry_point) {
             $handle = $this->assetHandle($entry_point);
-
             // Get the path from root directory as expected by `$this->url`.
-            $package_path = $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_JS ];
-
-            $dependencies = [];
+            $asset_path = $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_JS ];
 
             if (! empty($asset_files[ $entry_point . Assets::FILE_EXT_PHP ])) {
-                $asset_file   = $asset_files[ $entry_point . Assets::FILE_EXT_PHP ];
-                $asset_file   = $assets_path . $asset_file;
-                $asset        = file_exists($asset_file) ? require($asset_file) : null;
-                $dependencies = $asset['dependencies'] ?? $dependencies;
-
+                $asset_file   = $assets_path . $asset_files[ $entry_point . Assets::FILE_EXT_PHP ];
+                $asset        = file_exists($asset_file) ? require($asset_file) : [];
+                $dependencies = $asset['dependencies'] ?? null;
+                $version      = $asset['version'] ?? null;
                 // remove cyclical dependencies, if any
                 if (($key = array_search($handle, $dependencies, true)) !== false) {
                     unset($dependencies[ $key ]);
                 }
             }
-
-            $this->overrideScript(
+            $script = $this->addOrUpdateAsset(
                 $scripts,
                 $handle,
-                $this->url($package_path),
-                $dependencies,
-                $this->version,
-                true
+                $asset_path,
+                $dependencies ?? [],
+                $version ?? $this->version,
+                ['in_footer' => true]
             );
+
+            if ($script instanceof _WP_Dependency) {
+                $this->assets['js'][ $handle ] = $script;
+            }
         }
     }
 
@@ -294,84 +266,60 @@ class Assets
      *
      * @param WP_Styles $styles WP_Styles instance.
      */
-    public function registerPackagesStyles(WP_Styles $styles): void
+    public function registerStyles(WP_Styles $styles): void
     {
+        remove_action('wp_default_styles', [$this, 'registerStyles']);
         $asset_files  = $this->getManifest();
         $entry_points = $this->getEntryPoints();
 
         foreach ($entry_points as $entry_point) {
             $handle = $this->assetHandle($entry_point);
             if (! empty($asset_files[ $entry_point . Assets::FILE_EXT_CSS ])) {
-                $css_relative_path = $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_CSS ];
-                $css_absolute_path = EVENTS_CALENDAR_PLUS_BASE_PATH . $css_relative_path;
-
-                if (file_exists($css_absolute_path)) {
-                    $this->overrideStyle(
-                        $styles,
-                        $handle,
-                        $this->url($css_relative_path),
-                        [],
-                        $this->version
-                    );
+                $style = $this->addOrUpdateAsset(
+                    $styles,
+                    $handle,
+                    $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_CSS ],
+                    [],
+                    $this->version,
+                    'all'
+                );
+                if ($style instanceof _WP_Dependency) {
+                    $this->assets['css'][ $handle ] = $style;
                 }
             }
         }
     }
 
 
-    public function enqueueScript(_WP_Dependency $script)
+    public function registerDependencies()
     {
-        wp_enqueue_script($script->handle, $script->src, $script->deps, $script->ver, $script->args);
+        $wp_scripts = wp_scripts();
+        // Enqueue all the registered scripts and styles.
+        foreach ($this->assets['js'] as $script) {
+            $this->registerJsDependencies($wp_scripts, $script);
+        }
     }
 
 
-    public function enqueueStyle(_WP_Dependency $script)
+    public function registerJsDependencies(WP_Scripts $wp_scripts, _WP_Dependency $asset)
     {
-        wp_enqueue_style($script->handle, $script->src, $script->deps, $script->ver, $script->args);
-    }
-
-
-    public function enqueueScriptsAndStyles(array $scripts)
-    {
-        foreach ($scripts as $handle) {
-            $script = $this->assets['js'][ $handle ] ?? null;
-            if ($script instanceof _WP_Dependency) {
-                $this->enqueueScript($script);
+        foreach ($asset->deps as $handle) {
+            $js_asset = $wp_scripts->query($handle);
+            if (
+                ($asset->handle === 'calendarPlusAdmin' || $asset->handle === 'calendarPlus')
+                && $js_asset === false
+            ) {
+                $dependency_path = Assets::PATH . "/vendor/$handle.min.js";
+                if (is_readable(EVENTS_CALENDAR_PLUS_BASE_PATH . $dependency_path)) {
+                    $wp_scripts->add(
+                        $handle,
+                        EVENTS_CALENDAR_PLUS_BASE_URL . $dependency_path,
+                        [],
+                        $this->version,
+                        ['in_footer' => true]
+                    );
+                }
             }
-            $script = $this->assets['css'][ $handle ] ?? null;
-            if ($script instanceof _WP_Dependency) {
-                $this->enqueueStyle($script);
-            }
-        }
-    }
-
-
-    public function enqueueAdminScriptsAndStyles()
-    {
-        $script = $this->assets['js']['calendarPlusAdmin'] ?? null;
-        if ($script instanceof _WP_Dependency) {
-            $this->enqueueScript($script);
-            $this->enqueueScriptsAndStyles($script->deps);
-        }
-        $style = $this->assets['css']['calendarPlusAdmin'] ?? null;
-        if ($style instanceof _WP_Dependency) {
-            $this->enqueueStyle($style);
-            $this->enqueueScriptsAndStyles($style->deps);
-        }
-    }
-
-
-    public function enqueuePublicScriptsAndStyles()
-    {
-        $script = $this->assets['js']['calendarPlus'] ?? null;
-        if ($script instanceof _WP_Dependency) {
-            $this->enqueueScript($script);
-            $this->enqueueScriptsAndStyles($script->deps);
-        }
-        $style = $this->assets['css']['calendarPlus'] ?? null;
-        if ($style instanceof _WP_Dependency) {
-            $this->enqueueStyle($style);
-            $this->enqueueScriptsAndStyles($style->deps);
         }
     }
 }

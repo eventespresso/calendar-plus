@@ -84,7 +84,7 @@ class Admin
     }
 
 
-    public function enqueueAdminScriptsAndStyles(): void
+    public function enqueueAdminScriptsAndStyles(string $page): void
     {
         wp_enqueue_style(
             $this->plugin_slug,
@@ -92,6 +92,10 @@ class Admin
             [],
             $this->version
         );
+        if ($page !== 'calendar-event_page_events-calendar-plus-settings') {
+            // only enqueue on the Calendar Plus Admin Settings page
+            return;
+        }
         // barista scripts and styles
         wp_enqueue_style('calendarPlusAdmin');
         wp_enqueue_script('calendarPlusAdmin');

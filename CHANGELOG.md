@@ -6,24 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Releases
 
-### [1.0.2]
+### [1.0.3]
 
 #### Added
+ - [Implemented Settings for Week Start Day Selection (Barista#1401) (#1835)](https://github.com/eventespresso/cafe/pull/1835)
+ - [Add Query Params Support (Barista#1402)](https://github.com/eventespresso/barista/pull/1402)
  - NEW
 
 #### Fixed
- - [Allow eslint rule jsx no new object as prop (Barista#1384) (#1814)](https://github.com/eventespresso/cafe/pull/1814)
- - [Fix/cp/default settings migration (#1816)](https://github.com/eventespresso/cafe/pull/1816)
- - [Events Calendar Plus: Dont load Draft Events (#1817)](https://github.com/eventespresso/cafe/pull/1817)
+ - [Add entity caching and only query events from the previous month onwards  within Calendar Plus (#1871)](https://github.com/eventespresso/cafe/pull/1871)
+ - [Fix Events Calendar Plus Asset Loading from Barista (#1852)](https://github.com/eventespresso/cafe/pull/1852)
  - FIX
 
 #### Changed
- - [Fix/line clamp issue on safari (Barista#1395) (#1820)](https://github.com/eventespresso/cafe/pull/1820)
- - [fixed list style of agenda view to none (Barista#1391) (#1821)](https://github.com/eventespresso/cafe/pull/1821)
- - [fixed placeholder issue in edtr and p tag issue (Barista#1387) (#1822)](https://github.com/eventespresso/cafe/pull/1822)
- - [fixed events category color crash (Barista#1398) (#1826)](https://github.com/eventespresso/cafe/pull/1826)
- - [Fix Collapse Filters on Narrow Screens (Barista#1392) (#1828)](https://github.com/eventespresso/cafe/pull/1828)
- - [Added Admin Setting to Show Filters on Top Instead of Sidebar (Barista#1396) (#1829)](https://github.com/eventespresso/cafe/pull/1829)
+ - [Refactored Filters Logic into Predicates (Barista#1404) (#1839)](https://github.com/eventespresso/cafe/pull/1839)
+ - [Fixed Styles to Calendar-Domain Specific (Barista#1405) (#1847)](https://github.com/eventespresso/cafe/pull/1847)
+ - [Rename Version Files and Fallback to Main File for Version (#1880)](https://github.com/eventespresso/cafe/pull/1880)
+ - [Seperated i18n Utility Logic for Calendar Domains (Barista#1403) (#1884)](https://github.com/eventespresso/cafe/pull/1884)
  - MOD
 
 #### Deprecated
@@ -34,6 +33,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Security
  - SEC
+
+
+
+### [1.0.2]
+
+
+#### Fixed
+ - [Allow eslint rule jsx no new object as prop (Barista#1384) (#1814)](https://github.com/eventespresso/cafe/pull/1814)
+ - [Fix/cp/default settings migration (#1816)](https://github.com/eventespresso/cafe/pull/1816)
+ - [Events Calendar Plus: Dont load Draft Events (#1817)](https://github.com/eventespresso/cafe/pull/1817)
+
+#### Changed
+ - [Fix/line clamp issue on safari (Barista#1395) (#1820)](https://github.com/eventespresso/cafe/pull/1820)
+ - [fixed list style of agenda view to none (Barista#1391) (#1821)](https://github.com/eventespresso/cafe/pull/1821)
+ - [fixed placeholder issue in edtr and p tag issue (Barista#1387) (#1822)](https://github.com/eventespresso/cafe/pull/1822)
+ - [fixed events category color crash (Barista#1398) (#1826)](https://github.com/eventespresso/cafe/pull/1826)
+ - [Fix Collapse Filters on Narrow Screens (Barista#1392) (#1828)](https://github.com/eventespresso/cafe/pull/1828)
+ - [Added Admin Setting to Show Filters on Top Instead of Sidebar (Barista#1396) (#1829)](https://github.com/eventespresso/cafe/pull/1829)
+
+
+
 
 
 ### [1.0.1]

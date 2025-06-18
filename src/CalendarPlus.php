@@ -30,12 +30,38 @@ class CalendarPlus
 
     private string $version;
 
+    private static array $actions_to_skip = [
+        'heartbeat',
+    ];
+
+    private static array $paths_to_skip = [
+        'favicon.ico',
+        'wp-cron.php',
+    ];
+
 
     public function __construct(string $plugin_slug, string $version)
     {
         $this->plugin_slug = $plugin_slug;
         $this->version     = $version;
-        add_action('plugins_loaded', [$this, 'initialize']);
+        if ($this->loadCalendarPlus()) {
+            add_action('plugins_loaded', [$this, 'initialize']);
+        }
+    }
+
+
+    private function loadCalendarPlus(): bool
+    {
+        $url  = new URL();
+        $path = $url->path();
+        if ($path && in_array($path, CalendarPlus::$paths_to_skip, true)) {
+            return false;
+        }
+        $action = $url->queryParam('action');
+        if ($action && in_array($action, CalendarPlus::$actions_to_skip, true)) {
+            return false;
+        }
+        return true;
     }
 
 

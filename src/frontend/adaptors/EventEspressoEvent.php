@@ -8,6 +8,8 @@ use EE_Event;
 use EE_Term;
 use EE_Venue;
 use EEM_Event;
+use EEM_Datetime;
+use EEM_Term;
 use EventEspresso\CalendarPlus\api\DateTimeHelper;
 use EventEspresso\CalendarPlus\frontend\CalendarEvent;
 use Exception;
@@ -27,7 +29,12 @@ use EE_State;
 class EventEspressoEvent implements EventAdaptor
 {
 
-    private ?array $events = null;
+    private array $events_cache = [];
+
+    private array $category_cache = [];
+
+    private array $extra_meta_cache = [];
+
 
 
     public function isApplicable(): bool
@@ -42,12 +49,21 @@ class EventEspressoEvent implements EventAdaptor
      */
     private function loadEspressoEvents(): array
     {
-        if ($this->events === null) {
-            $this->events = EEM_Event::instance()->get_all(
-                [EEM_Event::instance()->set_where_conditions_for_status([])]
+        if (empty($this->events_cache)) {
+            $last_month = EEM_Datetime::instance()->convert_datetime_for_query(
+                'DTT_EVT_start',
+                date('Y-m-01', strtotime('-1 MONTH')) . ' 00:00:00',
+                'Y-m-d H:i:s',
+                'UTC'
             );
+            $where_params = [
+                'Datetime.DTT_EVT_end' => ['>=', $last_month ]
+            ];
+            $this->events_cache = EEM_Event::instance()->get_all([
+                EEM_Event::instance()->set_where_conditions_for_status($where_params)
+            ]);
         }
-        return $this->events;
+        return $this->events_cache;
     }
 
 
@@ -93,22 +109,33 @@ class EventEspressoEvent implements EventAdaptor
             return [];
         }
         $unique_event_types = [];
-
         try {
-            $events = $ID
-                ? $this->loadEspressoEvents()
-                : [EEM_Event::instance()->get_one_by_ID($ID)];
-            foreach ($events as $event) {
-                if (! $event instanceof EE_Event) {
-                    continue;
+            $categories = [];
+            if ($ID) {
+                if (! isset($this->events_cache[ $ID ] )) {
+                    // If the event is not in the cache, fetch it from the database
+                    $event = EEM_Event::instance()->get_one_by_ID($ID);
+                    if ($event instanceof EE_Event) {
+                        $this->events_cache[ $ID ] = $event;
+                    }
                 }
-                $categories = $event->get_all_event_categories();
-                foreach ($categories as $category) {
-                    if ($category instanceof EE_Term) {
-                        $category_name = $category->name();
-                        if (! in_array($category_name, $unique_event_types)) {
-                            $unique_event_types[] = $category_name;
-                        }
+                $event = $this->events_cache[ $ID ] ?? null;
+                if ($event instanceof EE_Event) {
+                    if (! isset($this->category_cache[ $ID ])) {
+                        $this->category_cache[ $ID ] = $event->get_all_event_categories();
+                    }
+                    $categories = $this->category_cache[ $ID ] ?? [];
+                }
+            } else {
+                $categories = EEM_Term::instance()->get_all(
+                    [['Term_Taxonomy.taxonomy' => 'espresso_event_categories']]
+                );
+            }
+            foreach ($categories as $category) {
+                if ($category instanceof EE_Term) {
+                    $category_name = $category->name();
+                    if (! in_array($category_name, $unique_event_types, true)) {
+                        $unique_event_types[] = $category_name;
                     }
                 }
             }
@@ -153,6 +180,25 @@ class EventEspressoEvent implements EventAdaptor
     }
 
 
+    /**
+     * @param EE_Event $event
+     * @return array|null
+     * @throws EE_Error
+     * @throws ReflectionException
+     */
+    public function getEventExtraMeta(EE_Event $event): ?array
+    {
+        // If no cached meta for this event exists
+        if(! array_key_exists($event->ID(), $this->extra_meta_cache)){
+            // Save the event meta to cache
+            $this->extra_meta_cache[$event->ID()] = $event->get_extra_meta(CalendarEvent::EVENT_META_KEY);
+        }
+
+        //  and then return it
+        return $this->extra_meta_cache[$event->ID()];
+    }
+
+
     private function createCalendarEvent(EE_Event $event, EE_Datetime $datetime): ?CalendarEvent
     {
         try {
@@ -162,7 +208,7 @@ class EventEspressoEvent implements EventAdaptor
             $start_date       = DateTimeHelper::convertUnixTimestampToDateTime($datetime->start());
             $end_date         = DateTimeHelper::convertUnixTimestampToDateTime($datetime->end());
             $venue            = $datetime->venue() ?: $event->venue();
-            $event_meta       = $event->get_extra_meta(CalendarEvent::EVENT_META_KEY);
+            $event_meta       = $this->getEventExtraMeta($event);
             $is_all_day       = $event_meta['all_day'] ?? false;
             $event_class_name = $event_meta['class_name'] ?? '';
             $description      = $datetime->description() ?: $event->description();
