@@ -6,23 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Releases
 
-### [1.0.3]
+### [1.0.4]
 
 #### Added
- - [Implemented Settings for Week Start Day Selection (Barista#1401) (#1835)](https://github.com/eventespresso/cafe/pull/1835)
- - [Add Query Params Support (Barista#1402)](https://github.com/eventespresso/barista/pull/1402)
+ - [Add Calendar Plus Version String to DOM and API Responses (#1896)](https://github.com/eventespresso/cafe/pull/1896)
+ - [Add Calendar Plus Support Admin Page (#1898)](https://github.com/eventespresso/cafe/pull/1898)
  - NEW
 
 #### Fixed
- - [Add entity caching and only query events from the previous month onwards  within Calendar Plus (#1871)](https://github.com/eventespresso/cafe/pull/1871)
- - [Fix Events Calendar Plus Asset Loading from Barista (#1852)](https://github.com/eventespresso/cafe/pull/1852)
+ - [Prevent Migrations From Running on New Calendar Plus Activations (#1905)](https://github.com/eventespresso/cafe/pull/1905)
  - FIX
 
 #### Changed
- - [Refactored Filters Logic into Predicates (Barista#1404) (#1839)](https://github.com/eventespresso/cafe/pull/1839)
- - [Fixed Styles to Calendar-Domain Specific (Barista#1405) (#1847)](https://github.com/eventespresso/cafe/pull/1847)
- - [Rename Version Files and Fallback to Main File for Version (#1880)](https://github.com/eventespresso/cafe/pull/1880)
- - [Seperated i18n Utility Logic for Calendar Domains (Barista#1403) (#1884)](https://github.com/eventespresso/cafe/pull/1884)
+ - [Fix - All Filters Checkbox Filtering Issue (Barista#1417) (#1890)](https://github.com/eventespresso/cafe/pull/1890)
+ - [Refactor Events Calendar Plus Data Loading and Add Data Migration Management (#1881)](https://github.com/eventespresso/cafe/pull/1881)
+ - [CalendarPlus Data fetching with api (Barista#1410) (#1902)](https://github.com/eventespresso/cafe/pull/1902)
+ - [Fix/Calendar Plus Crash (Barista#1425) (#1903)](https://github.com/eventespresso/cafe/pull/1903)
+ - [Add entity caches to ee event adapter (#1868)](https://github.com/eventespresso/cafe/pull/1868)
  - MOD
 
 #### Deprecated
@@ -33,6 +33,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Security
  - SEC
+
+
+
+### [1.0.3]
+
+#### Added
+ - [Implemented Settings for Week Start Day Selection (Barista#1401) (#1835)](https://github.com/eventespresso/cafe/pull/1835)
+ - [Add Query Params Support (Barista#1402)](https://github.com/eventespresso/barista/pull/1402)
+
+#### Fixed
+ - [Add entity caching and only query events from the previous month onwards  within Calendar Plus (#1871)](https://github.com/eventespresso/cafe/pull/1871)
+ - [Fix Events Calendar Plus Asset Loading from Barista (#1852)](https://github.com/eventespresso/cafe/pull/1852)
+
+#### Changed
+ - [Refactored Filters Logic into Predicates (Barista#1404) (#1839)](https://github.com/eventespresso/cafe/pull/1839)
+ - [Fixed Styles to Calendar-Domain Specific (Barista#1405) (#1847)](https://github.com/eventespresso/cafe/pull/1847)
+ - [Rename Version Files and Fallback to Main File for Version (#1880)](https://github.com/eventespresso/cafe/pull/1880)
+ - [Seperated i18n Utility Logic for Calendar Domains (Barista#1403) (#1884)](https://github.com/eventespresso/cafe/pull/1884)
+
+
+
 
 
 

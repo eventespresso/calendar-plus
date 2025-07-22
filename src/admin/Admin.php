@@ -57,8 +57,44 @@ class Admin
 
     public function registerHooks(): void
     {
+        add_action('admin_init', [$this, 'validateTimezone']);
         add_action('admin_menu', [$this, 'addMenuPage']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminScriptsAndStyles'], 99);
+    }
+
+
+    public function validateTimezone(): void
+    {
+        // verify that site has a proper timezone set
+        $timezone_string = get_option('timezone_string', '');
+        if (empty($timezone_string)) {
+            $timezone_string = get_option('gmt_offset', 0);
+            if (is_numeric($timezone_string)){
+                $sign = $timezone_string >= 0 ? '+' : '-';
+                $hours = (int) $timezone_string;
+                $minutes = (int) round(abs($timezone_string - $hours) * 60);
+                $timezone_string = sprintf('%s%d:%02d', $sign, $hours, $minutes);
+            }
+            add_action(
+                'admin_notices',
+                fn() => wp_admin_notice(
+                    sprintf(
+                        esc_html__(
+                            'Events Calendar ✚ requires your WordPress timezone setting to use a named timezone (like "America/New_York" or "Europe/London") instead of a UTC offset ("UTC%1$s").%2$sPlease go to %3$sSettings → General%4$s and select a city in the same timezone as you.',
+                            'events-calendar-plus'
+                        ),
+                        $timezone_string,
+                        '<br>',
+                        '<a href="' . admin_url('options-general.php') . '">',
+                        '</a>'
+                    ),
+                    [
+                        'type' => 'error',
+                        'dismissible' => true,
+                    ]
+                )
+            );
+        }
     }
 
 
@@ -70,17 +106,32 @@ class Admin
             __('Calendar ✚  Settings', 'events-calendar-plus'),
             'manage_options',
             'events-calendar-plus-settings',
-            [$this, 'adminPageTemplate']
+            [$this, 'settingsAdminPage'],
+            5
+        );
+        add_submenu_page(
+            'edit.php?post_type=' . CalendarPlusPostType::EVENT,
+            __('Help & How To', 'events-calendar-plus'),
+            __('Help & How To', 'events-calendar-plus'),
+            'read',
+            'events-calendar-plus-support',
+            [$this, 'supportAdminPage'],
+            6
         );
     }
 
 
-    public function adminPageTemplate(): void
+    public function settingsAdminPage(): void
     {
         if (! current_user_can('manage_options')) {
             wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'events-calendar-plus'));
         }
         require_once "$this->templates/calendar-plus-admin-settings.php";
+    }
+
+    public function supportAdminPage(): void
+    {
+        require_once "$this->templates/calendar-plus-admin-support.php";
     }
 
 
@@ -103,12 +154,12 @@ class Admin
         wp_localize_script(
             'calendarPlusAdmin',
             'calendarPlusSettings',
-            $this->config->getSettings(false)
+            $this->config->getSettings()
         );
         wp_localize_script(
             'calendarPlusAdmin',
             'eventCategories',
-            $this->data_handler->getEventCategories(false)
+            $this->data_handler->getEventCategories()
         );
     }
 }

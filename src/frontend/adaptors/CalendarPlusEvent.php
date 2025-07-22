@@ -2,6 +2,7 @@
 
 namespace EventEspresso\CalendarPlus\frontend\adaptors;
 
+use EventEspresso\CalendarPlus\api\DateRange;
 use EventEspresso\CalendarPlus\CalendarPlusPostMeta;
 use EventEspresso\CalendarPlus\CalendarPlusPostType;
 use EventEspresso\CalendarPlus\frontend\CalendarEvent;
@@ -19,8 +20,11 @@ use WP_Term;
  * @author      Brent Christensen
  * @since       1.0.1
  */
-class CalendarPlusEvent implements EventAdaptor
+class CalendarPlusEvent extends EventAdaptor
 {
+    public const SLUG = 'calendarPlus';
+
+
     public function isApplicable(): bool
     {
         return true;
@@ -30,32 +34,18 @@ class CalendarPlusEvent implements EventAdaptor
     /**
      * @return CalendarEvent[]
      */
-    public function getEvents(): array
+    private function convertResultsToCalendarEvents(array $posts): array
     {
         $calendar_events = [];
-        try {
-            $query = new WP_Query(
-                [
-                    'post_type'      => CalendarPlusPostType::EVENT,
-                    'post_status'    => 'publish',
-                    'posts_per_page' => -1,
-                ]
-            );
-
-            foreach ($query->posts as $post) {
-                if (! $post instanceof WP_Post) {
-                    continue;
-                }
-                $calendar_event = $this->createCalendarEvent($post);
-                if (! $calendar_event instanceof CalendarEvent) {
-                    continue;
-                }
-                $calendar_events[] = $calendar_event;
+        foreach ($posts as $post) {
+            if (! $post instanceof WP_Post) {
+                continue;
             }
-        } catch (Exception $e) {
-            if (WP_DEBUG) {
-                error_log($e->getMessage());
+            $calendar_event = $this->createCalendarEvent($post);
+            if (! $calendar_event instanceof CalendarEvent) {
+                continue;
             }
+            $calendar_events[] = $calendar_event;
         }
         return $calendar_events;
     }
@@ -141,45 +131,36 @@ class CalendarPlusEvent implements EventAdaptor
     private function createCalendarEvent(WP_Post $post): ?CalendarEvent
     {
         try {
-            [
-                'address'        => $address,
-                'all_day_event'  => $all_day_event,
-                'city'           => $city,
-                'country'        => $country,
-                'css_class'      => $css_class,
-                'end_datetime'   => $end_datetime,
-                'start_datetime' => $start_datetime,
-                'state'          => $state,
-                'venue'          => $venue,
-            ] = CalendarPlusPostMeta::forCalendarEvent($post->ID);
+            $post_ID = $post->ID;
+            $start_datetime = CalendarPlusPostMeta::startDateForCalendarEvent($post_ID);
+            $end_datetime = CalendarPlusPostMeta::endDateForCalendarEvent($post_ID);
 
             if (! $start_datetime || ! $end_datetime) {
                 return null;
             }
-
-            $categories       = $this->getEventCategories($post->ID);
+            $categories       = $this->getEventCategories($post_ID);
             $primary_category = ! empty($categories) ? $categories[0] : '';
 
-            $tags        = $this->getEventTags($post->ID);
+            $tags        = $this->getEventTags($post_ID);
             $tags_string = implode(', ', $tags);
 
             return new CalendarEvent(
-                $post->ID,
+                $post_ID,
                 $post->post_title,
                 $post->post_content,
                 $primary_category,
                 get_permalink($post),
                 $start_datetime,
                 $end_datetime,
-                $all_day_event,
-                get_the_post_thumbnail_url($post->ID, 'large'),
-                $css_class,
+                CalendarPlusPostMeta::isAllDay($post_ID),
+                get_the_post_thumbnail_url($post_ID, 'large'),
+                CalendarPlusPostMeta::cssClass($post_ID),
                 $tags_string,
-                $venue,
-                $address,
-                $city,
-                $state,
-                $country,
+                CalendarPlusPostMeta::venue($post_ID),
+                CalendarPlusPostMeta::address($post_ID),
+                CalendarPlusPostMeta::city($post_ID),
+                CalendarPlusPostMeta::state($post_ID),
+                CalendarPlusPostMeta::country($post_ID),
             );
         } catch (Exception $e) {
             if (WP_DEBUG) {
@@ -187,5 +168,80 @@ class CalendarPlusEvent implements EventAdaptor
             }
             return null;
         }
+    }
+
+
+    /**
+     * @param DateRange $date_range DateRange object
+     * @param int       $offset     [optional] offset for pagination, defaults to $this->query_limit
+     * @return CalendarEvent[]
+     */
+    public function getEventsForDateRange(DateRange $date_range, int $offset = 0): array
+    {
+        try {
+            $query = new WP_Query(
+                [
+                    'post_type'      => CalendarPlusPostType::EVENT,
+                    'post_status'    => 'publish',
+                    'posts_per_page' => $this->query_limit,
+                    'offset'         => $offset,
+                    'meta_query'     => $this->getMetaQueryForDateRange($date_range)
+                ]
+            );
+            return $this->convertResultsToCalendarEvents($query->posts);
+        } catch (Exception $e) {
+            if (WP_DEBUG) {
+                error_log($e->getMessage());
+            }
+        }
+        return [];
+    }
+
+
+    private function getMetaQueryForDateRange(DateRange $date_range): array
+    {
+        return [
+            [
+                'key'     => 'calendar_event_start_datetime',
+                'value'   => $date_range->startString(),
+                'compare' => '>=',
+                'type'    => 'DATETIME',
+            ],
+            [
+                'key'     => 'calendar_event_end_datetime',
+                'value'   => $date_range->endString(),
+                'compare' => '<=',
+                'type'    => 'DATETIME',
+            ],
+        ];
+    }
+
+
+    /**
+     * set the total number of events
+     *
+     * @param DateRange $date_range
+     * @return int
+     * @since 1.0.5
+     */
+    public function totalEventCount(DateRange $date_range): int
+    {
+        try {
+            $query = new WP_Query(
+                [
+                    'post_type'      => CalendarPlusPostType::EVENT,
+                    'post_status'    => 'publish',
+                    'posts_per_page' => 1, // we only need the count
+                    'fields'         => 'ids',
+                    'meta_query'     => $this->getMetaQueryForDateRange($date_range)
+                ]
+            );
+            $this->event_count = absint($query->found_posts);
+        } catch (Exception $e) {
+            if (WP_DEBUG) {
+                error_log($e->getMessage());
+            }
+        }
+        return $this->event_count;
     }
 }

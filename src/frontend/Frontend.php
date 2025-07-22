@@ -4,6 +4,7 @@ namespace EventEspresso\CalendarPlus\frontend;
 
 use EventEspresso\CalendarPlus\api\CalendarPlusConfig;
 use EventEspresso\CalendarPlus\CalendarPlusPostType;
+use Exception;
 use WP_Error;
 
 /**
@@ -12,9 +13,9 @@ use WP_Error;
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    CalendarPlus
- * @subpackage CalendarPlus/frontend
- * @author     Event Espresso <support@eventespresso.com>
+ * @package     CalendarPlus
+ * @subpackage  CalendarPlus/frontend
+ * @author      Brent Christensen
  */
 class Frontend
 {
@@ -66,6 +67,10 @@ class Frontend
     }
 
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function enqueueScripts(): void
     {
         if (is_singular(CalendarPlusPostType::EVENT)) {
@@ -83,12 +88,12 @@ class Frontend
         wp_localize_script(
             'calendarPlus',
             'calendarPlusSettings',
-            $this->config->getSettings(false)
+            $this->config->getSettings()
         );
         wp_localize_script(
             'calendarPlus',
             'calendarPlusData',
-            $this->data_handler->getEventData(false)
+            $this->data_handler->getEventDataForCurrentMonth()
         );
     }
 

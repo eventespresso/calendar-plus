@@ -8,8 +8,8 @@ use EE_Event;
 use EE_Term;
 use EE_Venue;
 use EEM_Event;
-use EEM_Datetime;
 use EEM_Term;
+use EventEspresso\CalendarPlus\api\DateRange;
 use EventEspresso\CalendarPlus\api\DateTimeHelper;
 use EventEspresso\CalendarPlus\frontend\CalendarEvent;
 use Exception;
@@ -26,15 +26,15 @@ use EE_State;
  * @author      Brent Christensen
  * @since       1.0.0
  */
-class EventEspressoEvent implements EventAdaptor
+class EventEspressoEvent extends EventAdaptor
 {
+    public const SLUG = 'eventEspresso';
 
     private array $events_cache = [];
 
     private array $category_cache = [];
 
     private array $extra_meta_cache = [];
-
 
 
     public function isApplicable(): bool
@@ -44,59 +44,36 @@ class EventEspressoEvent implements EventAdaptor
 
 
     /**
-     * @throws ReflectionException
-     * @throws EE_Error
-     */
-    private function loadEspressoEvents(): array
-    {
-        if (empty($this->events_cache)) {
-            $last_month = EEM_Datetime::instance()->convert_datetime_for_query(
-                'DTT_EVT_start',
-                date('Y-m-01', strtotime('-1 MONTH')) . ' 00:00:00',
-                'Y-m-d H:i:s',
-                'UTC'
-            );
-            $where_params = [
-                'Datetime.DTT_EVT_end' => ['>=', $last_month ]
-            ];
-            $this->events_cache = EEM_Event::instance()->get_all([
-                EEM_Event::instance()->set_where_conditions_for_status($where_params)
-            ]);
-        }
-        return $this->events_cache;
-    }
-
-
-    /**
+     * @param DateRange $date_range
+     * @param array     $events
      * @return CalendarEvent[]
+     * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getEvents(): array
+    public function convertResultsToCalendarEvents(DateRange $date_range, array $events): array
     {
-        if (! $this->isApplicable()) {
-            return [];
-        }
         $calendar_events = [];
-        try {
-            $events = $this->loadEspressoEvents();
-            foreach ($events as $event) {
-                if (! $event instanceof EE_Event) {
+        foreach ($events as $event) {
+            if (! $event instanceof EE_Event) {
+                continue;
+            }
+            $this->events_cache[ $event->ID() ] = $event;
+            $datetimes                          = $event->datetimes_ordered();
+            foreach ($datetimes as $datetime) {
+                if (! $datetime instanceof EE_Datetime) {
                     continue;
                 }
-                $datetimes = $event->datetimes_ordered();
-                foreach ($datetimes as $datetime) {
-                    if (! $datetime instanceof EE_Datetime) {
-                        continue;
-                    }
-                    $calendar_event = $this->createCalendarEvent($event, $datetime);
-                    if (! $calendar_event instanceof CalendarEvent) {
-                        continue;
-                    }
-                    $calendar_events[] = $calendar_event;
+                if (
+                    $datetime->start() < $date_range->startTimestamp()
+                    || $datetime->end() > $date_range->endTimestamp()
+                ) {
+                    continue;
                 }
-            }
-        } catch (Exception $e) {
-            if (WP_DEBUG) {
-                error_log($e->getMessage());
+                $calendar_event = $this->createCalendarEvent($event, $datetime);
+                if (! $calendar_event instanceof CalendarEvent) {
+                    continue;
+                }
+                $calendar_events[] = $calendar_event;
             }
         }
         return $calendar_events;
@@ -112,7 +89,7 @@ class EventEspressoEvent implements EventAdaptor
         try {
             $categories = [];
             if ($ID) {
-                if (! isset($this->events_cache[ $ID ] )) {
+                if (! isset($this->events_cache[ $ID ])) {
                     // If the event is not in the cache, fetch it from the database
                     $event = EEM_Event::instance()->get_one_by_ID($ID);
                     if ($event instanceof EE_Event) {
@@ -139,10 +116,8 @@ class EventEspressoEvent implements EventAdaptor
                     }
                 }
             }
-        } catch (Exception $e) {
-            if (WP_DEBUG) {
-                error_log($e->getMessage());
-            }
+        } catch (Exception $exception) {
+            $this->logError($exception);
         }
 
         return $unique_event_types;
@@ -189,13 +164,13 @@ class EventEspressoEvent implements EventAdaptor
     public function getEventExtraMeta(EE_Event $event): ?array
     {
         // If no cached meta for this event exists
-        if(! array_key_exists($event->ID(), $this->extra_meta_cache)){
+        if (! array_key_exists($event->ID(), $this->extra_meta_cache)) {
             // Save the event meta to cache
-            $this->extra_meta_cache[$event->ID()] = $event->get_extra_meta(CalendarEvent::EVENT_META_KEY);
+            $this->extra_meta_cache[ $event->ID() ] = $event->get_extra_meta(CalendarEvent::EVENT_META_KEY);
         }
 
         //  and then return it
-        return $this->extra_meta_cache[$event->ID()];
+        return $this->extra_meta_cache[ $event->ID() ];
     }
 
 
@@ -213,14 +188,11 @@ class EventEspressoEvent implements EventAdaptor
             $event_class_name = $event_meta['class_name'] ?? '';
             $description      = $datetime->description() ?: $event->description();
 
-            $permalink = $event->get_permalink();
+            $permalink   = $event->get_permalink();
             $datetime_id = $datetime->id();
-
-            if ($datetime_id) {
-                $url = esc_url(add_query_arg('datetime', $datetime_id, $permalink));
-            } else {
-                $url = esc_url($permalink);
-            }
+            $permalink   = $datetime_id
+                ? add_query_arg('datetime', $datetime_id, $permalink)
+                : $permalink;
 
             $address = '';
             $city    = '';
@@ -248,24 +220,126 @@ class EventEspressoEvent implements EventAdaptor
                 $event_name,                                                // string $title
                 $description,                                               // string $description
                 $categories,                                                // string $event_type
-                $url,                                                       // string $url
+                esc_url($permalink),                                        // string $url
                 DateTimeHelper::convertDatetimeToImmutable($start_date),    // DateTimeImmutable $start
                 DateTimeHelper::convertDatetimeToImmutable($end_date),      // DateTimeImmutable $end
                 $is_all_day,                                                // bool $all_day = false
-                get_the_post_thumbnail_url($event->ID(), 'large'),      // string $image = ''
+                get_the_post_thumbnail_url($event->ID(), 'large'),          // string $image = ''
                 $event_class_name,                                          // string $class_name = ''
                 $tags,                                                      // string $tags = ''
-                $venue instanceof EE_Venue ? $venue->name() : '',     // string $venue = ''
+                $venue instanceof EE_Venue ? $venue->name() : '',           // string $venue = ''
                 $address,                                                   // string $address = ''
                 $city,                                                      // string $city = ''
                 $state,                                                     // string $state = ''
                 $country                                                    // string $country = ''
             );
-        } catch (Exception $e) {
-            if (WP_DEBUG) {
-                error_log($e->getMessage());
-            }
-            return null;
+        } catch (Exception $exception) {
+            $this->logError($exception);
+        }
+        return null;
+    }
+
+
+    /**
+     * @param DateRange $date_range DateRange object
+     * @param int       $offset     [optional] offset for pagination, defaults to $this->query_limit
+     * @return CalendarEvent[]
+     * @throws Exception
+     */
+    public function getEventsForDateRange(DateRange $date_range, int $offset = 0): array
+    {
+        try {
+            $limit = $offset > 0 ? [$offset, $this->query_limit] : $this->query_limit;
+            /*
+                SELECT *
+                FROM wp_posts AS Event_CPT
+                    LEFT JOIN wp_esp_event_meta AS Event_Meta ON Event_CPT.ID = Event_Meta.EVT_ID
+                    LEFT JOIN wp_esp_datetime AS Datetime ON Datetime.EVT_ID = Event_CPT.ID
+                WHERE Event_CPT.post_type = 'espresso_events'
+                    AND Event_CPT.post_status IN ('publish', 'sold_out')
+                    AND ((Datetime.DTT_deleted = 0) OR Datetime.DTT_ID IS NULL)
+                    AND Datetime.DTT_EVT_start > '2025-05-01 00:00:00'
+                    AND Datetime.DTT_EVT_end < '2025-05-31 23:59:59'
+                GROUP BY Event_CPT.ID
+                LIMIT 50
+             */
+            return $this->convertResultsToCalendarEvents(
+                $date_range,
+                EEM_Event::instance()->get_all(
+                    [
+                        EEM_Event::instance()->set_where_conditions_for_status(
+                            [
+                                'Datetime.DTT_EVT_start' => [
+                                    '>=',
+                                    $date_range->startTimestamp(),
+                                ],
+                                'Datetime.DTT_EVT_end'   => [
+                                    '<',
+                                    $date_range->endTimestamp(),
+                                ],
+                            ]
+                        ),
+                        'limit'    => $limit,
+                        'group_by' => '', // prevents non-aggregate grouping error
+                    ]
+                )
+            );
+        } catch (Exception $exception) {
+            $this->logError($exception);
+        }
+        return [];
+    }
+
+
+    /**
+     * set and get the total number of events
+     *
+     * @param DateRange $date_range
+     * @return int
+     * @since 1.0.5
+     */
+    public function totalEventCount(DateRange $date_range): int
+    {
+        try {
+            /*
+                SELECT COUNT(Event_CPT.ID)
+                FROM  wp_posts AS Event_CPT
+                    LEFT JOIN wp_esp_event_meta AS Event_Meta ON Event_CPT.ID = Event_Meta.EVT_ID
+                    LEFT JOIN wp_esp_datetime AS Datetime ON Datetime.EVT_ID=Event_CPT.ID
+                WHERE Event_CPT.post_type = 'espresso_events'
+                    AND Event_CPT.post_status IN ('publish','sold_out')
+                    AND ((Datetime.DTT_deleted = 0) OR Datetime.DTT_ID IS NULL)
+                    AND Datetime.DTT_EVT_start > '2025-05-01 00:00:00'
+                    AND Datetime.DTT_EVT_end < '2025-05-31 23:59:59'
+             */
+            $this->event_count = EEM_Event::instance()->count(
+                [
+                    EEM_Event::instance()->set_where_conditions_for_status(
+                        [
+                            'Datetime.DTT_EVT_start' => [
+                                '>=',
+                                $date_range->startTimestamp(),
+                            ],
+                            'Datetime.DTT_EVT_end'   => [
+                                '<',
+                                $date_range->endTimestamp(),
+                            ],
+                        ]
+                    ),
+                ]
+            );
+            return $this->event_count;
+        } catch (Exception $exception) {
+            $this->logError($exception);
+        }
+        return 0;
+    }
+
+
+    private function logError(Exception $exception): void
+    {
+        if (WP_DEBUG) {
+            error_log($exception->getMessage());
         }
     }
 }

@@ -28,34 +28,28 @@ export default function Edit() {
 	const [meta, setMeta] = wp.coreData.useEntityProp('postType', currentPost.type, 'meta');
 
 	const defaults = {
-		address: '',
-		all_day: false,
-		city: '',
-		country: '',
-		end_datetime: '',
-		start_datetime: '',
-		state: '',
-		timezone_offset: '',
-		venue: '',
+		calendar_event_address: '',
+		calendar_event_all_day: false,
+		calendar_event_city: '',
+		calendar_event_country: '',
+		calendar_event_end_datetime: '',
+		calendar_event_start_datetime: '',
+		calendar_event_state: '',
+		calendar_event_timezone_offset: '',
+		calendar_event_venue: '',
 	}
 
-	const metaData = {...defaults, ...meta['calendar-event-data']};
+	const metaData = {...defaults, ...meta};
 
-	const address = metaData?.address || '';
-	const all_day = metaData?.all_day || false;
-	const city = metaData?.city || '';
-	const country = metaData?.country || '';
-	const end_datetime = metaData?.end_datetime || '';
-	const start_datetime = metaData?.start_datetime || '';
-	const state = metaData?.state || '';
-	const timezone_offset = metaData?.timezone_offset || '';
-	const venue = metaData?.venue || '';
-
-	const updateMeta = (key, value) => {
-		let newMetaData = {...metaData, [key]: value};
-		delete newMetaData.timezone_offset;
-		setMeta({'calendar-event-data': newMetaData});
-	};
+	const address = metaData?.calendar_event_address || '';
+	const all_day = metaData?.calendar_event_all_day || false;
+	const city = metaData?.calendar_event_city || '';
+	const country = metaData?.calendar_event_country || '';
+	const end_datetime = metaData?.calendar_event_end_datetime || '';
+	const start_datetime = metaData?.calendar_event_start_datetime || '';
+	const state = metaData?.calendar_event_state || '';
+	const timezone_offset = metaData?.calendar_event_timezone_offset || '';
+	const venue = metaData?.calendar_event_venue || '';
 
 	wp.element.useEffect(() => {
 		if ( ! start_datetime ) {
@@ -82,7 +76,7 @@ export default function Edit() {
 					<InputControl type="datetime-local"
 								  label={__('Start Date & Time', 'events-calendar-plus')}
 								  value={start_datetime}
-								  onChange={(nextValue) => updateMeta("start_datetime", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_start_datetime": nextValue})}
 								  isPressEnterToChange
 								  required
 								  __next40pxDefaultSize
@@ -90,14 +84,14 @@ export default function Edit() {
 					<InputControl type="datetime-local"
 								  label={__('End Date & Time', 'events-calendar-plus')}
 								  value={end_datetime}
-								  onChange={(nextValue) => updateMeta("end_datetime", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_end_datetime": nextValue})}
 								  isPressEnterToChange
 								  __next40pxDefaultSize
 					/>
 					<CheckboxControl label={__('All Day Event', 'events-calendar-plus')}
 									 checked={all_day}
 									 className="all-day-checkbox"
-									 onChange={(nextValue) => updateMeta("all_day", nextValue)}
+									 onChange={(nextValue) => setMeta({"calendar_event_all_day": nextValue})}
 									 __nextHasNoMarginBottom
 					/>
 				</HStack>
@@ -105,14 +99,14 @@ export default function Edit() {
 					<InputControl type="text"
 								  label={__('Venue Name', 'events-calendar-plus')}
 								  value={venue}
-								  onChange={(nextValue) => updateMeta("venue", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_venue": nextValue})}
 								  isPressEnterToChange
 								  __next40pxDefaultSize
 					/>
 					<InputControl type="text"
 								  label={__('Address', 'events-calendar-plus')}
 								  value={address}
-								  onChange={(nextValue) => updateMeta("address", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_address": nextValue})}
 								  isPressEnterToChange
 								  __next40pxDefaultSize
 					/>
@@ -121,21 +115,21 @@ export default function Edit() {
 					<InputControl type="text"
 								  label={__('City', 'events-calendar-plus')}
 								  value={city}
-								  onChange={(nextValue) => updateMeta("city", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_city": nextValue})}
 								  isPressEnterToChange
 								  __next40pxDefaultSize
 					/>
 					<InputControl type="text"
 								  label={__('State/Province', 'events-calendar-plus')}
 								  value={state}
-								  onChange={(nextValue) => updateMeta("state", nextValue)}
+								  onChange={(nextValue) => setMeta({"calendar_event_state": nextValue})}
 								  isPressEnterToChange
 								  __next40pxDefaultSize
 					/>
 					<InputControl type="text"
 								 label={__('Country', 'events-calendar-plus')}
 								 value={country}
-								 onChange={(nextValue) => updateMeta("country", nextValue)}
+								 onChange={(nextValue) => setMeta({"calendar_event_country": nextValue})}
 								  isPressEnterToChange
 								 __next40pxDefaultSize
 					/>

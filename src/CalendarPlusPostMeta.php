@@ -3,7 +3,10 @@
 namespace EventEspresso\CalendarPlus;
 
 use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use EventEspresso\CalendarPlus\api\DateTimeHelper;
+use Throwable;
 use WP_Error;
 
 /**
@@ -16,218 +19,307 @@ use WP_Error;
  */
 class CalendarPlusPostMeta
 {
-    public static function getPostMeta(int $post_id): array
+    //CalendarPlusPostType::EVENT .
+    public const KEY_ADDRESS    = 'calendar_event_address';
+
+    public const KEY_ALL_DAY    = 'calendar_event_all_day';
+
+    public const KEY_CITY       = 'calendar_event_city';
+
+    public const KEY_COUNTRY    = 'calendar_event_country';
+
+    public const KEY_CSS_CLASS  = 'calendar_event_css_class';
+
+    public const KEY_END_DATE   = 'calendar_event_end_datetime';
+
+    public const KEY_START_DATE = 'calendar_event_start_datetime';
+
+    public const KEY_STATE      = 'calendar_event_state';
+
+    public const KEY_VENUE      = 'calendar_event_venue';
+
+
+    private static DateTimeZone $site_timezone;
+
+
+    public function registerHooks(): void
     {
-        $post_meta = get_post_meta($post_id, CalendarPlusPostType::POST_META_KEY, true);
+        CalendarPlusPostMeta::$site_timezone = DateTimeHelper::siteTimezone();
+        add_action('init', [$this, 'registerPostMeta'], 110);
+    }
+
+
+    public function registerPostMeta()
+    {
+        $meta_properties = $this->metaProperties();
+        $prop_context    = ['view', 'edit', 'embed'];
+        foreach ($meta_properties as $meta_key => $args) {
+            try {
+                register_post_meta(
+                    CalendarPlusPostType::EVENT,
+                    $meta_key,
+                    [
+                        'type'              => $args['type'],
+                        'description'       => $args['description'],
+                        'single'            => true,
+                        'show_in_rest'      => [
+                            'schema' => [
+                                'type'    => $args['type'],
+                                'context' => $prop_context,
+                            ],
+                        ],
+                        'sanitize_callback' => $args['sanitize_callback'],
+                        'auth_callback'     => fn() => current_user_can('edit_posts'),
+                    ]
+                );
+            } catch (Throwable $e) {
+                $error_message = sprintf(
+                    esc_html__(
+                        '[%s] Failed to register post meta "%s" for post type "%s": %s in %s on line %d',
+                        'events-calendar-plus'
+                    ),
+                    __METHOD__,
+                    $meta_key,
+                    CalendarPlusPostType::EVENT,
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
+                );
+                add_action(
+                    'admin_notices',
+                    function () use ($error_message) {
+                        echo '<div class="notice notice-error"><p>' . $error_message . '</p></div>';
+                    }
+                );
+                error_log($error_message);
+            }
+        }
+    }
+
+
+    private function metaProperties(): array
+    {
+        return [
+            CalendarPlusPostMeta::KEY_START_DATE => [
+                'type'              => 'string',
+                'description'       => __('Event start date/time', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeDate'],
+            ],
+            CalendarPlusPostMeta::KEY_END_DATE   => [
+                'type'              => 'string',
+                'description'       => __('Event end date/time', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeDate'],
+            ],
+            CalendarPlusPostMeta::KEY_ALL_DAY    => [
+                'type'              => 'boolean',
+                'description'       => __('Is all day event', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeBoolean'],
+            ],
+            CalendarPlusPostMeta::KEY_VENUE      => [
+                'type'              => 'string',
+                'description'       => __('Venue', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+            CalendarPlusPostMeta::KEY_ADDRESS    => [
+                'type'              => 'string',
+                'description'       => __('Address', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+            CalendarPlusPostMeta::KEY_CITY       => [
+                'type'              => 'string',
+                'description'       => __('City', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+            CalendarPlusPostMeta::KEY_STATE      => [
+                'type'              => 'string',
+                'description'       => __('State', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+            CalendarPlusPostMeta::KEY_COUNTRY    => [
+                'type'              => 'string',
+                'description'       => __('Country', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+            CalendarPlusPostMeta::KEY_CSS_CLASS  => [
+                'type'              => 'string',
+                'description'       => __('CSS class name', 'events-calendar-plus'),
+                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeText'],
+            ],
+        ];
+    }
+
+
+    public static function sanitizeBoolean($value): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
+
+    public static function sanitizeText(string $value): string
+    {
+        return trim(sanitize_text_field($value));
+    }
+
+
+    public static function sanitizeDate($datetime): string
+    {
+        if (empty($datetime)) {
+            return '';
+        }
+        // convert the start and end datetimes to UTC any time post meta is saved
+        $datetime = DateTimeHelper::convertSiteTimezoneToUTC($datetime);
+        return DateTimeHelper::formatDateTimeForDatabase($datetime);
+    }
+
+
+    public static function getPostMeta(int $post_ID, ?string $post_meta_key = null)
+    {
+        $post_meta_key = $post_meta_key ?: CalendarPlusPostType::POST_META_KEY;
+        $post_meta     = get_post_meta($post_ID, $post_meta_key, true);
         return CalendarPlusPostMeta::unserializePostMeta($post_meta);
     }
 
 
-    private static function unserializePostMeta($post_meta): array
+    private static function stringValue(int $post_ID, string $post_meta_key): string
+    {
+        return CalendarPlusPostMeta::sanitizeText(
+            (string) CalendarPlusPostMeta::getPostMeta($post_ID, $post_meta_key)
+        );
+    }
+
+
+    private static function booleanValue(int $post_ID, string $post_meta_key): bool
+    {
+        return CalendarPlusPostMeta::sanitizeBoolean(
+            CalendarPlusPostMeta::getPostMeta($post_ID, $post_meta_key)
+        );
+    }
+
+
+    private static function datetimeForCalendarEvent(int $post_ID, string $post_meta_key): ?DateTimeImmutable
+    {
+        $datetime = CalendarPlusPostMeta::stringValue($post_ID, $post_meta_key);
+        $datetime = DateTimeHelper::convertStringToDateTime(
+            $datetime,
+            '',
+            CalendarPlusPostMeta::$site_timezone
+        );
+        return $datetime instanceof DateTime
+            ? DateTimeHelper::convertDatetimeToImmutable($datetime)
+            : null;
+    }
+
+
+    private static function datetimeForPostContent(int $post_ID, string $post_meta_key): array
+    {
+        $datetime = CalendarPlusPostMeta::stringValue($post_ID, $post_meta_key);
+        $datetime = DateTimeHelper::convertStringToDateTime($datetime);
+        return $datetime instanceof DateTime
+            ? [
+                DateTimeHelper::formatDateForDisplay($datetime),
+                DateTimeHelper::formatTimeForDisplay($datetime),
+            ]
+            : [
+                '',
+                '',
+            ];
+    }
+
+
+    public static function unserializePostMeta($post_meta)
     {
         if (! $post_meta) {
-            return [];
+            return null;
         }
         $post_meta = maybe_unserialize($post_meta);
-        return $post_meta && ! $post_meta instanceof WP_Error ? $post_meta : [];
-    }
-
-
-    public static function forCalendarEvent(int $post_id): array
-    {
-        $post_meta = CalendarPlusPostMeta::getPostMeta($post_id);
-        if (! $post_meta) {
-            return [
-                'address'        => '',
-                'all_day_event'  => false,
-                'city'           => '',
-                'country'        => '',
-                'css_class'      => '',
-                'end_datetime'   => '',
-                'same_day'       => false,
-                'start_datetime' => '',
-                'state'          => '',
-                'venue'          => '',
-            ];
-        }
-
-        $all_day_event = filter_var(($post_meta['all_day'] ?? false), FILTER_VALIDATE_BOOLEAN);
-        $site_timezone = DateTimeHelper::siteTimezone();
-
-        $start_datetime = $post_meta['start_datetime'] ?? '';
-        $end_datetime   = $post_meta['end_datetime'] ?? '';
-
-        $start_datetime = DateTimeHelper::convertStringToDateTime($start_datetime, '', $site_timezone);
-        if ($start_datetime instanceof DateTime) {
-            $start_datetime = DateTimeHelper::convertDatetimeToImmutable($start_datetime);
-        }
-        if ($end_datetime) {
-            $end_datetime = DateTimeHelper::convertStringToDateTime($end_datetime, '', $site_timezone);
-            if ($end_datetime instanceof DateTime) {
-                $end_datetime = DateTimeHelper::convertDatetimeToImmutable($end_datetime);
-            }
-        }
-        $css_class = $post_meta['class_name'] ?? '';
-        $css_class .= $all_day_event ? ' all-day-event' : '';
-
-        return [
-            'address'        => $post_meta['address'] ?? '',
-            'all_day_event'  => $all_day_event,
-            'city'           => $post_meta['city'] ?? '',
-            'country'        => $post_meta['country'] ?? '',
-            'css_class'      => $css_class,
-            'end_datetime'   => $end_datetime,
-            'start_datetime' => $start_datetime,
-            'state'          => $post_meta['state'] ?? '',
-            'venue'          => $post_meta['venue'] ?? '',
-        ];
-    }
-
-
-    public static function forPostContent(int $post_id): array
-    {
-        $post_meta = CalendarPlusPostMeta::getPostMeta($post_id);
-        if (! $post_meta) {
-            return [
-                'address'       => '',
-                'all_day_event' => false,
-                'city'          => '',
-                'country'       => '',
-                // 'css_class'     => '',
-                'end_date'      => '',
-                'end_time'      => '',
-                'same_day'      => false,
-                'start_date'    => '',
-                'start_time'    => '',
-                'state'         => '',
-                'venue'         => '',
-            ];
-        }
-        $start_datetime = $post_meta['start_datetime'] ?? null;
-        $end_datetime   = $post_meta['end_datetime'] ?? null;
-        if (! $start_datetime) {
-            return [
-                'address'       => '',
-                'all_day_event' => false,
-                'city'          => '',
-                'country'       => '',
-                // 'css_class'     => '',
-                'end_date'      => '',
-                'end_time'      => '',
-                'same_day'      => false,
-                'start_date'    => '',
-                'start_time'    => '',
-                'state'         => '',
-                'venue'         => '',
-            ];
-        }
-
-        $same_day   = false;
-        $start_date = '';
-        $start_time = '';
-        $end_date   = '';
-        $end_time   = '';
-
-        $start_datetime = DateTimeHelper::convertStringToDateTime($start_datetime);
-        if ($start_datetime instanceof DateTime) {
-            $start_date = DateTimeHelper::formatDateForDisplay($start_datetime);
-            $start_time = DateTimeHelper::formatTimeForDisplay($start_datetime);
-        }
-        $end_datetime = DateTimeHelper::convertStringToDateTime($end_datetime);
-        if ($end_datetime instanceof DateTime) {
-            $end_date = DateTimeHelper::formatDateForDisplay($end_datetime);
-            $end_time = DateTimeHelper::formatTimeForDisplay($end_datetime);
-        }
-        if ($start_datetime instanceof DateTime && $end_datetime instanceof DateTime) {
-            $same_day = DateTimeHelper::datesAreSameDay($start_datetime, $end_datetime);
-        }
-
-        $all_day_event = filter_var(($post_meta['all_day'] ?? false), FILTER_VALIDATE_BOOLEAN);
-        // $css_class     = $post_meta['class_name'] ?? '';
-        // $css_class     .= $all_day_event ? ' all-day-event' : '';
-
-        return [
-            'address'       => $post_meta['address'] ?? '',
-            'all_day_event' => $all_day_event,
-            'city'          => $post_meta['city'] ?? '',
-            'country'       => $post_meta['country'] ?? '',
-            // 'css_class'     => $css_class,
-            'end_date'      => $end_date,
-            'end_time'      => $end_time,
-            'same_day'      => $same_day,
-            'start_date'    => $start_date,
-            'start_time'    => $start_time,
-            'state'         => $post_meta['state'] ?? '',
-            'venue'         => $post_meta['venue'] ?? '',
-        ];
-    }
-
-
-    public static function prepareForRestApiResponse($meta_value): array
-    {
-        $meta_value = CalendarPlusPostMeta::unserializePostMeta($meta_value);
-
-        if (! $meta_value) {
-            return [];
-        }
-
-        $meta_value['all_day'] = filter_var(($meta_value['all_day'] ?? false), FILTER_VALIDATE_BOOLEAN);
-
-        $start_datetime = $meta_value['start_datetime'] ?? null;
-        $end_datetime   = $meta_value['end_datetime'] ?? null;
-
-        // convert the start and end datetimes to the site timezone any time post meta is retrieved
-        if ($start_datetime) {
-            $start_datetime               = DateTimeHelper::convertSiteTimezoneToUTC($start_datetime);
-            $meta_value['start_datetime'] = DateTimeHelper::formatDateTimeForDatabase($start_datetime);
-        }
-        if ($end_datetime) {
-            $end_datetime               = DateTimeHelper::convertSiteTimezoneToUTC($end_datetime);
-            $meta_value['end_datetime'] = DateTimeHelper::formatDateTimeForDatabase($end_datetime);
-        }
-
-        return $meta_value;
-    }
-
-
-    public static function sanitizeForRestApi($meta_value)
-    {
-        $meta_value = CalendarPlusPostMeta::unserializePostMeta($meta_value);
-
-        $all_day = $meta_value['all_day'] ?? false;
-        $all_day = filter_var($all_day, FILTER_VALIDATE_BOOLEAN);
-
-        $start_datetime = $meta_value['start_datetime'] ?? '';
-        $end_datetime   = $meta_value['end_datetime'] ?? '';
-
-        if (empty($start_datetime)) {
-            return new WP_Error(
-                'rest_invalid_param',
-                __('The "Start Date & Time" field is required.', 'events-calendar-plus')
+        if ($post_meta instanceof WP_Error) {
+            $error_message = sprintf(
+                esc_html__(
+                    '[%1$s] Failed to unserialize post meta: %2$s',
+                    'events-calendar-plus'
+                ),
+                __METHOD__,
+                var_export($post_meta->get_error_message(), true)
             );
+            error_log($error_message);
+            return null;
         }
+        return $post_meta ?: null;
+    }
 
-        // convert the start and end datetimes to UTC any time post meta is saved
-        $start_datetime = DateTimeHelper::convertSiteTimezoneToUTC($start_datetime);
-        $start_datetime = DateTimeHelper::formatDateTimeForDatabase($start_datetime);
 
-        if ($end_datetime) {
-            $end_datetime = DateTimeHelper::convertSiteTimezoneToUTC($end_datetime);
-            $end_datetime = DateTimeHelper::formatDateTimeForDatabase($end_datetime);
-        }
+    public static function address(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_ADDRESS);
+    }
 
-        $meta_value = [
-            'all_day'        => $all_day,
-            'start_datetime' => $start_datetime,
-            'end_datetime'   => $end_datetime,
-            'venue'          => sanitize_text_field($meta_value['venue'] ?? ''),
-            'address'        => sanitize_text_field($meta_value['address'] ?? ''),
-            'city'           => sanitize_text_field($meta_value['city'] ?? ''),
-            'state'          => sanitize_text_field($meta_value['state'] ?? ''),
-            'country'        => sanitize_text_field($meta_value['country'] ?? ''),
-            // 'class_name'     => sanitize_text_field($meta_value['class_name'] ?? ''),
-        ];
 
-        return serialize($meta_value);
+    public static function isAllDay(int $post_ID): bool
+    {
+        return CalendarPlusPostMeta::booleanValue($post_ID, CalendarPlusPostMeta::KEY_ALL_DAY);
+    }
+
+
+    public static function city(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_CITY);
+    }
+
+
+    public static function country(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_COUNTRY);
+    }
+
+
+    public static function cssClass(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_CSS_CLASS);
+    }
+
+
+    public static function endDateForCalendarEvent(int $post_ID): ?DateTimeImmutable
+    {
+        return CalendarPlusPostMeta::datetimeForCalendarEvent($post_ID, CalendarPlusPostMeta::KEY_END_DATE);
+    }
+
+
+    public static function endDateForPostContent(int $post_ID): array
+    {
+        return CalendarPlusPostMeta::datetimeForPostContent($post_ID, CalendarPlusPostMeta::KEY_END_DATE);
+    }
+
+
+    public static function isSameDay(int $post_ID): bool
+    {
+        $start_datetime = CalendarPlusPostMeta::startDateForCalendarEvent($post_ID);
+        $end_datetime   = CalendarPlusPostMeta::endDateForCalendarEvent($post_ID);
+        return $start_datetime instanceof DateTimeImmutable
+            && $end_datetime instanceof DateTimeImmutable
+            && DateTimeHelper::datesAreSameDay($start_datetime, $end_datetime);
+    }
+
+
+    public static function startDateForCalendarEvent(int $post_ID): ?DateTimeImmutable
+    {
+        return CalendarPlusPostMeta::datetimeForCalendarEvent($post_ID, CalendarPlusPostMeta::KEY_START_DATE);
+    }
+
+
+    public static function startDateForPostContent(int $post_ID): array
+    {
+        return CalendarPlusPostMeta::datetimeForPostContent($post_ID, CalendarPlusPostMeta::KEY_START_DATE);
+    }
+
+
+    public static function state(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_STATE);
+    }
+
+
+    public static function venue(int $post_ID): string
+    {
+        return CalendarPlusPostMeta::stringValue($post_ID, CalendarPlusPostMeta::KEY_VENUE);
     }
 }

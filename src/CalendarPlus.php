@@ -8,6 +8,11 @@ use EventEspresso\CalendarPlus\api\CalendarPlusConfig;
 use EventEspresso\CalendarPlus\api\DateTimeHelper;
 use EventEspresso\CalendarPlus\frontend\EventDataHandler;
 use EventEspresso\CalendarPlus\frontend\Frontend;
+use EventEspresso\CalendarPlus\frontend\Maintenance;
+use EventEspresso\CalendarPlus\migrations\MigrationsAdmin;
+use EventEspresso\CalendarPlus\migrations\DatabaseSchema;
+use EventEspresso\CalendarPlus\migrations\MigrationStatus;
+use EventEspresso\CalendarPlus\tools\Request;
 
 /**
  * The core plugin class.
@@ -30,7 +35,10 @@ class CalendarPlus
 
     private string $version;
 
+    private Request $request;
+
     private static array $actions_to_skip = [
+        'activate',
         'heartbeat',
     ];
 
@@ -44,20 +52,23 @@ class CalendarPlus
     {
         $this->plugin_slug = $plugin_slug;
         $this->version     = $version;
+        $this->request     = new Request();
         if ($this->loadCalendarPlus()) {
             add_action('plugins_loaded', [$this, 'initialize']);
+        }
+        if (WP_DEBUG) {
+            add_action('wp_ajax_events_calendar_plus_reset_migrations', [$this, 'resetMigrations']);
         }
     }
 
 
     private function loadCalendarPlus(): bool
     {
-        $url  = new URL();
-        $path = $url->path();
+        $path = $this->request->path();
         if ($path && in_array($path, CalendarPlus::$paths_to_skip, true)) {
             return false;
         }
-        $action = $url->queryParam('action');
+        $action = $this->request->queryParam('action');
         if ($action && in_array($action, CalendarPlus::$actions_to_skip, true)) {
             return false;
         }
@@ -76,8 +87,28 @@ class CalendarPlus
     {
         DateTimeHelper::initialize();
 
+        if (DatabaseSchema::migrationsAreRequired()) {
+            MigrationStatus::markMigrationsAsRequired();
+
+            $custom_post = new CalendarPlusPostType(false);
+            $custom_post->registerHooks();
+
+            $post_meta = new CalendarPlusPostMeta();
+            $post_meta->registerHooks();
+
+            $frontend = new Maintenance($this->pluginSlug(), $this->version());
+            $frontend->registerHooks();
+
+            $migrations_admin = new MigrationsAdmin($this->request, $this->pluginSlug(), $this->version());
+            $migrations_admin->registerHooks();
+            return;
+        }
+
         $custom_post = new CalendarPlusPostType();
         $custom_post->registerHooks();
+
+        $post_meta = new CalendarPlusPostMeta();
+        $post_meta->registerHooks();
 
         $blocks = new CalendarPlusBlocks($this->pluginSlug());
         $blocks->registerHooks();
@@ -88,15 +119,23 @@ class CalendarPlus
         $assets = new Assets($this->version());
         $assets->registerHooks();
 
-        $api = new CalendarPlusAPI($config);
-        $api->registerHooks();
-
         $data_handler = new EventDataHandler();
+
+        $api = new CalendarPlusAPI($config, $data_handler, $this->pluginSlug(), $this->version());
+        $api->registerHooks();
 
         $module = is_admin()
             ? new Admin($config, $data_handler, $this->pluginSlug(), $this->version())
             : new Frontend($config, $data_handler, $this->pluginSlug(), $this->version());
         $module->registerHooks();
+
+        add_action('wp_head', [$this, 'printVersion'], 999);
+    }
+
+    public function resetMigrations(): void
+    {
+        $migrations_admin = new MigrationsAdmin($this->request, $this->pluginSlug(), $this->version());
+        $migrations_admin->resetMigrations();
     }
 
 
@@ -123,5 +162,15 @@ class CalendarPlus
         return wp_get_environment_type() !== 'production'
             ? $this->version . '.' . time()
             : $this->version;
+    }
+
+
+    public function printVersion()
+    {
+        printf(
+            '<meta name="%s-version" content="%s">',
+            $this->plugin_slug,
+            $this->version
+        );
     }
 }

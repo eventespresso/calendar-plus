@@ -44,6 +44,281 @@
 
 
 
+/* C+ Settings Page */
+
+.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-settings {
+    #calendar-plus-admin {
+        overflow-x: unset;
+        overflow-y: auto;
+        padding-inline-end: 1rem;
+
+        & .chakra-tabs {
+            .chakra-tabs__tablist {
+                width: 18rem;
+            }
+        }
+    }
+}
+
+
+
+/* C+ Support Page */
+
+.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-support {
+
+    --ecp-page-bg: hsl(200 12% 97.5%);
+    --ecp-header-bg: hsl(236 50% 90%);
+    --ecp-intro-bg: hsl(237, 50%, 95%);
+    --ecp-faqs-bg: hsl(237, 25%, 95%);
+
+    --ecp-heading-color: hsl(237 30% 50%);
+    --ecp-heading-accent: hsl(237 27.5% 35%);
+    --ecp-text-color: hsl(0 0% 0% / 75%);
+    --ecp-dashicons-color: hsl(237 27.5% 27% / 75%);
+
+    --ecp-link-color: hsl(207, 77%, 52%);
+    --ecp-link-hover: hsl(207, 87%, 52%);
+
+    --ecp-code-bg: hsl(200 12% 90% / 90%);
+    --ecp-code-text: hsl(84, 50%, 7.5%);
+
+    @media (prefers-color-scheme: dark) {
+        --ecp-page-bg: hsl(200 12% 20%);
+        --ecp-header-bg: hsl(236 17.5% 17%);
+        --ecp-intro-bg: hsl(237, 27%, 40%);
+        --ecp-faqs-bg: hsl(236 17.5% 17%);
+
+        --ecp-heading-color: hsl(237 20% 80%);
+        --ecp-heading-accent: hsl(237 57.25% 77%);
+        --ecp-text-color: hsl(0 0% 100% / 92%);
+        --ecp-dashicons-color: hsl(237 57.25% 77% / 75%);
+
+        --ecp-link-color: hsl(207, 77%, 62%);
+        --ecp-link-hover: hsl(207, 87%, 62%);
+
+        --ecp-code-bg: hsl(200 12% 10%);
+        --ecp-code-text: hsl(84, 75%, 75%);
+    }
+
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: 1rem;
+    color: var(--ecp-text-color);
+    background: var(--ecp-page-bg);
+    line-height: 1.5;
+
+    div {
+        box-sizing: border-box;
+    }
+
+    #wpcontent {
+        padding-left: 0;
+
+        .wrap {
+            margin: 0;
+
+            h1, h2, h3, h4, h5, h6 {
+                color: var(--ecp-heading-color);
+                font-weight: 700;
+                line-height: 1.1;
+                margin-block-start: 1rem;
+                margin-block-end: .25rem;
+            }
+            h1 {
+                color: var(--ecp-heading-accent);
+                font-size: clamp(2.5rem, 4.5vw, 5rem);
+                margin: 0;
+                padding: 0;
+                text-wrap: balance;
+            }
+            h2 {
+                font-size: clamp(2rem, 3.5vw, 3rem);
+                margin-block-start: 0;
+            }
+            h3 {
+                font-size: clamp(1.75rem, 2.75vw, 2.75rem);
+            }
+            h4 {
+                font-size: clamp(1.5rem, 2.25vw, 2.25rem);
+            }
+            h5 {
+                color: var(--ecp-heading-accent);
+                font-size: clamp(1.1875rem, 1.5vw, 1.75rem);
+                margin-block-start: 2rem;
+            }
+
+            p {
+                font-size: 1.125rem;
+                margin-block-start: .25rem;
+                margin-block-end: .25rem;
+            }
+
+            a {
+                color: var(--ecp-link-color);
+                text-decoration: none;
+
+                &:hover,
+                &:focus {
+                    color: var(--ecp-link-hover);
+                    text-decoration: underline;
+                    text-underline-offset: .1875rem;
+                }
+            }
+
+            code {
+                background-color: var(--ecp-code-bg);
+                border-radius: .125rem;
+                color: var(--ecp-code-text);
+                font-family: "Courier New", Courier, monospace;
+                padding: .125rem;
+            }
+
+            .header {
+                align-items: center;
+                background-color: var(--ecp-header-bg);
+                display: flex;
+                justify-content: space-between;
+                margin-block: 0;
+                padding: clamp(2rem, 2vw, 4rem) clamp(4rem, 4vw, 8rem);
+                width: 100%;
+
+
+                .dashicons {
+                    color: var(--ecp-dashicons-color);
+                    margin-inline-start: 2vw;
+
+                    &.dashicons-sos {
+                        font-size: clamp(3.5rem, 4.5vw, 7rem);
+                        height: clamp(3.5rem, 4.5vw, 7rem);
+                        width: clamp(3.5rem, 4.5vw, 7rem);
+
+                        :before {
+                            height: clamp(3.5rem, 4.5vw, 7rem);
+                            width: clamp(3.5rem, 4.5vw, 7rem);
+                        }
+                    }
+
+                    &.dashicons-editor-help {
+                        font-size: clamp(4rem, 5vw, 8rem);
+                        height: clamp(4rem, 5vw, 8rem);
+                        width: clamp(4rem, 5vw, 8rem);
+                        :before {
+                            height: clamp(4rem, 5vw, 8rem);
+                            width: clamp(4rem, 5vw, 8rem);
+                        }
+                    }
+                }
+            }
+
+            .intro {
+                background-color: var(--ecp-intro-bg);
+                margin-block: 0;
+                padding: clamp(2rem, 2vw, 4rem) clamp(4rem, 4vw, 8rem);
+                width: 100%;
+            }
+
+            .installation {
+                margin-block: 0;
+                padding: clamp(1.5rem, 1.5vw, 3rem) clamp(4rem, 3vw, 8rem);
+                width: 100%;
+            }
+
+            .faqs-hdr {
+                text-align: center;
+            }
+
+            .faqs-wrapper {
+                display: grid;
+                gap: clamp(1rem, 2vw, 4rem);
+                grid-template-areas:
+                    "gq em"
+                    "tc tr"
+                    "tc st"
+                    "sup sup";
+                margin-block: 0;
+                max-width: 100%;
+                padding: clamp(1rem, 2vw, 3rem) clamp(1rem, 2vw, 4rem);
+                width: 100%;
+
+                @media (max-width: 60rem) {
+                    grid-template-areas:
+                        "gq"
+                        "em"
+                        "tc"
+                        "tr"
+                        "st"
+                        "sup";
+                    padding: 1rem;
+                }
+
+                .faqs {
+                    background-color: var(--ecp-faqs-bg);
+                    border-radius: 2rem;
+                    padding: 2rem 3rem;
+
+                    @media (max-width: 30rem) {
+                        padding: 1.5rem 2.25rem;
+                    }
+
+                    &.gq {
+                        grid-area: gq;
+                    }
+                    &.em {
+                        grid-area: em;
+                    }
+                    &.tc {
+                        grid-area: tc;
+                    }
+                    &.tr {
+                        grid-area: tr;
+                    }
+                    &.st {
+                        grid-area: st;
+                    }
+                    &.support {
+                        grid-area: sup;
+                    }
+
+
+                    p.ecp-answer {
+                        margin-block-end: 3rem;
+
+                        &:last-child {
+                            margin-block-end: 1rem;
+                        }
+
+                        span:first-child {
+                            color: var(--ecp-heading-accent);
+                            font-weight: 700;
+                            font-size: clamp(1.1875rem, 1.5vw, 1.75rem);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+
+.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-settings,
+.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-support {
+    --ecp-notice-bg: hsl(0 0% 100%);
+    --ecp-notice-border: hsl(225 5% 80%);
+    @media (prefers-color-scheme: dark) {
+        --ecp-notice-bg: hsl(200 12% 15%);
+        --ecp-notice-border: hsl(225 5% 20%);
+    }
+    .notice, div.error, div.updated {
+        background-color: var(--ecp-notice-bg) !important;
+        border-block-color: var(--ecp-notice-border);
+        border-inline-end-color: var(--ecp-notice-border);
+        padding: .25rem 1rem !important;
+    }
+}
+
+
+
 /* WP PLUGINS PAGE */
 
 .wp-admin.wp-core-ui.plugins-php .plugins {

@@ -112,30 +112,53 @@ class CalendarEvent
     }
 
 
-    public function toArray(): array
+    private function getStartDate(): string
     {
         // Convert UTC times to site timezone
         $start_local = DateTimeHelper::convertUtcToSiteTimezone($this->start);
-        if ($this->end) {
-            $end_local = DateTimeHelper::convertUtcToSiteTimezone($this->end);
-            $end_local = DateTimeHelper::formatDateAndTimeForAPI($end_local);
-        } else {
-            $end_local = '';
-        }
+        return DateTimeHelper::formatDateAndTimeForAPI($start_local);
+    }
 
+
+    private function getEndDate(): string
+    {
+        if ($this->end) {
+            // Convert UTC times to site timezone
+            $end_local = DateTimeHelper::convertUtcToSiteTimezone($this->end);
+            return DateTimeHelper::formatDateAndTimeForAPI($end_local);
+        }
+        return '';
+    }
+
+
+    private function generateUID(): string
+    {
+        $UID = $this->ID
+            . $this->title
+            . $this->start->format('U')
+            . $this->end->format('U')
+            . $this->venue;
+        $UID = md5($UID);
+        return substr($UID, 0, 4) . substr($UID, -4, 4);
+    }
+
+
+    public function toArray(): array
+    {
         return [
+            'UID'         => $this->generateUID(),
             'address'     => $this->address,
             'allDay'      => $this->all_day,
             'city'        => $this->city,
             'className'   => $this->class_name,
             'country'     => $this->country,
             'description' => $this->description,
-            'end'         => $end_local,
+            'end'         => $this->getEndDate(),
+            'eventDays'   => $this->event_days,
+            'eventID'     => $this->ID,
             'eventType'   => $this->event_type,
-            'event_days'  => $this->event_days,
-            'id'          => $this->ID,
             'image'       => $this->image,
-            'start'       => DateTimeHelper::formatDateAndTimeForAPI($start_local),
+            'start'       => $this->getStartDate(),
             'state'       => $this->state,
             'tags'        => $this->tags,
             'title'       => $this->title,

@@ -1,0 +1,43 @@
+
+/* Frontend Maintenance Message */
+.calendar-plus-maintenance {
+    --ecp-accent-color: hsl(237, 60%, 60%);
+    background: hsl(237 60% 60% / 5%);
+    border-radius: 0.5rem;
+    border: 1px solid var(--ecp-accent-color);
+    box-sizing: border-box;
+    margin: 2rem 0;
+    min-height: 15rem;
+    padding: 2rem 2rem 3rem;
+    position: relative;
+    text-align: center;
+
+    .dashicons {
+        color: var(--ecp-accent-color);
+        font-size: 12rem;
+        height: 12rem;
+        opacity: .0625;
+        position: absolute;
+        width: 12rem;
+
+        &:before {
+            font-size: 12rem;
+            height: 12rem;
+            width: 12rem;
+        }
+
+        &.dashicons-admin-tools { left: 1rem; }
+        &.dashicons-calendar-alt { right: 1rem; }
+    }
+
+    h2 {
+        margin-top: 1rem;
+        text-wrap: balance;
+    }
+
+    p {
+        font-size: 1.125rem;
+        margin: 0 auto;
+        max-width: 58ch;
+    }
+}

@@ -2,7 +2,10 @@
 
 namespace EventEspresso\CalendarPlus\frontend;
 
+use EventEspresso\CalendarPlus\api\DateRange;
+use EventEspresso\CalendarPlus\api\QueryResponse;
 use EventEspresso\CalendarPlus\frontend\adaptors\EventAdaptor;
+use Exception;
 
 /**
  * EventDataHandler
@@ -17,86 +20,108 @@ class EventDataHandler
     /**
      * @var EventAdaptor[]
      */
-    private ?array $adapters = null;
+    private ?array $adaptors = null;
 
 
-    private function retrieveAdaptors(): void
+    private function retrieveAdaptors(): array
     {
-        if ($this->adapters === null) {
-            $this->adapters = [];
-            $adapters       = apply_filters(
+        if ($this->adaptors === null) {
+            $this->adaptors = [];
+            $adaptors       = apply_filters(
                 'FHEE__EventEspresso_CalendarPlus_frontend_EventDataHandler__retrieveAdaptors__adapters',
                 glob(EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/frontend/adaptors/*.php')
             );
-            foreach ($adapters as $adapter) {
-                if (strpos($adapter, 'EventAdaptor') !== false) {
+            foreach ($adaptors as $adaptor) {
+                if (strpos($adaptor, 'EventAdaptor') !== false) {
                     continue;
                 }
-                // if adapter is a local file, then convert to CalendarPlus FQCN
-                $adapter_class = strpos($adapter, EVENTS_CALENDAR_PLUS_BASE_PATH) === 0
-                    ? 'EventEspresso\\CalendarPlus\\frontend\\adaptors\\' . basename($adapter, '.php')
-                    : $adapter;
-                if (class_exists($adapter_class)) {
-                    $adapter = new $adapter_class();
-                    if ($adapter instanceof EventAdaptor && $adapter->isApplicable()) {
-                        $this->adapters[] = $adapter;
+                // if adaptor is a local file, then convert to CalendarPlus FQCN
+                $adaptor_class = strpos($adaptor, EVENTS_CALENDAR_PLUS_BASE_PATH) === 0
+                    ? 'EventEspresso\\CalendarPlus\\frontend\\adaptors\\' . basename($adaptor, '.php')
+                    : $adaptor;
+                if (class_exists($adaptor_class)) {
+                    $adaptor = new $adaptor_class();
+                    if ($adaptor instanceof EventAdaptor && $adaptor->isApplicable()) {
+                        $this->adaptors[ $adaptor->slug() ] = $adaptor;
                     }
                 }
             }
         }
+        return $this->adaptors;
     }
 
 
     /**
-     * @param bool $encode
-     * @return array|bool|string
+     * @param DateRange|null $date_range
+     * @param array          $offsets
+     * @return array
+     * @throws Exception
      */
-    public function getEventData(bool $encode = true)
+    private function getEvents(?DateRange $date_range = null, array $offsets = []): array
     {
-        $this->retrieveAdaptors();
+        $date_range = $date_range instanceof DateRange
+            ? $date_range
+            : DateRange::createForCurrentMonth();
+        $adaptors   = $this->retrieveAdaptors();
         $event_data = [];
-        foreach ($this->adapters as $adapter) {
-            $events = $adapter->getEvents();
-            foreach ($events as $event) {
-                if (! $event instanceof CalendarEvent) {
-                    continue;
-                }
-                $event_data[] = $event->toArray();
-            }
+        foreach ($adaptors as $slug => $adaptor) {
+            $offset = $offsets[ $slug ] ?? 0;
+            $source = new QueryResponse($adaptor, $offset);
+            $source->getEventsForDateRange($date_range);
+            $event_data[] = $source->processResponse();
         }
         if (! $event_data && defined('WP_DEBUG') && WP_DEBUG) {
             $event_data = $this->loadExampleData();
         }
-        return $encode
-            ? wp_json_encode($event_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
-            : $event_data;
+        return $event_data;
+    }
+
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getEventDataForCurrentMonth(): array
+    {
+        return $this->getEvents(DateRange::createForCurrentMonth());
+    }
+
+
+    /**
+     * Retrieves event data for a specific date range
+     *
+     * @param DateRange $date_range
+     * @param array     $offsets Array of offsets for different event sources
+     *                           ["eventEspresso" => 50]
+     * @return array            Event data for the specified date range
+     * @throws Exception
+     */
+    public function getEventDataForDateRange(DateRange $date_range, array $offsets): array
+    {
+        return $this->getEvents($date_range, $offsets);
     }
 
 
     private function loadExampleData(): array
     {
-        $example_data = wp_json_file_decode(EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/frontend/assets/example-data.json');
+        $example_data = wp_json_file_decode(EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/frontend/assets/example-response.json');
         return $example_data ?: [];
     }
 
 
     /**
-     * @param bool $encode
-     * @return array|bool|string
+     * @return array
      */
-    public function getEventCategories(bool $encode = true)
+    public function getEventCategories(): array
     {
         $this->retrieveAdaptors();
         $categories = [];
-        foreach ($this->adapters as $adapter) {
-            $categories[] = $adapter->getEventCategories();
+        foreach ($this->adaptors as $adaptor) {
+            $categories[] = $adaptor->getEventCategories();
         }
-        // now merge all category arrays together
+        // now merge all category arrays (instead of merging within the loop)
         $categories = array_merge([], ...$categories);
         // and remove duplicates
-        $categories = array_unique($categories);
-        return $encode
-            ? wp_json_encode($categories, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
-            : $categories;
+        return array_unique($categories);
     }
 }

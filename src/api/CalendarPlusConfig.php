@@ -14,13 +14,13 @@ class CalendarPlusConfig
 {
     const SETTINGS_VERSION = 2;
 
-    const OPTION_NAME    = 'events_calendar_plus_settings';
+    const OPTION_NAME      = 'events_calendar_plus_settings';
 
-    const UPDATE_FAILED  = -1;
+    const UPDATE_FAILED    = -1;
 
-    const UPDATE_NONE    = 0;
+    const UPDATE_NONE      = 0;
 
-    const UPDATE_SUCCESS = 1;
+    const UPDATE_SUCCESS   = 1;
 
     private array $settings = [];
 
@@ -38,9 +38,10 @@ class CalendarPlusConfig
         return $this->defaults['new_defaults'] ?? [];
     }
 
+
     private function loadDefaultsFile(): void
     {
-        $this->defaults = require __DIR__ . '/DefaultSettings.php';
+        $this->defaults = require __DIR__ . '/defaultSettings.php';
     }
 
 
@@ -48,57 +49,58 @@ class CalendarPlusConfig
     {
         $this->loadDefaultsFile();
 
-        $saved        = (array) get_option(self::OPTION_NAME, []);
-        $oldDefaults  = $this->defaults['old_defaults'] ?? [];
-        $newDefaults  = $this->defaults['new_defaults'] ?? [];
+        $saved       = (array) get_option(CalendarPlusConfig::OPTION_NAME, []);
+        $oldDefaults = $this->defaults['old_defaults'] ?? [];
+        $newDefaults = $this->defaults['new_defaults'] ?? [];
 
         $currentVersion = (int) ($saved['settings_version'] ?? 0);
 
-        if ($currentVersion < self::SETTINGS_VERSION) {
-            $migrated = $this->smartMerge($saved, $oldDefaults, $newDefaults);
-            $migrated['settings_version'] = self::SETTINGS_VERSION;
-            update_option(self::OPTION_NAME, $migrated);
+        if ($currentVersion < CalendarPlusConfig::SETTINGS_VERSION) {
+            $migrated                     = $this->smartMerge($saved, $oldDefaults, $newDefaults);
+            $migrated['settings_version'] = CalendarPlusConfig::SETTINGS_VERSION;
+            update_option(CalendarPlusConfig::OPTION_NAME, $migrated);
             return $migrated;
         }
 
         return $saved;
     }
 
+
     private function smartMerge(array $saved, array $oldDefaults, array $newDefaults): array
     {
         $result = $saved;
 
         foreach ($newDefaults as $key => $newValue) {
-            if (!array_key_exists($key, $saved)) {
+            if (! array_key_exists($key, $saved)) {
                 // Not set by user, use new default
-                $result[$key] = $newValue;
+                $result[ $key ] = $newValue;
             } elseif ($key === 'styles' && is_array($newValue)) {
                 // Handle styles separately for light and dark
                 $result['styles'] = $result['styles'] ?? [];
 
                 foreach (['light', 'dark'] as $theme) {
-                    $savedTheme = $saved['styles'][$theme] ?? [];
-                    $oldTheme   = $oldDefaults['styles'][$theme] ?? [];
-                    $newTheme   = $newDefaults['styles'][$theme] ?? [];
+                    $savedTheme = $saved['styles'][ $theme ] ?? [];
+                    $oldTheme   = $oldDefaults['styles'][ $theme ] ?? [];
+                    $newTheme   = $newDefaults['styles'][ $theme ] ?? [];
 
                     // Check if user modified any key
                     $userModified = false;
                     foreach ($oldTheme as $styleKey => $oldStyleValue) {
                         if (
                             array_key_exists($styleKey, $savedTheme) &&
-                            $savedTheme[$styleKey] !== $oldStyleValue
+                            $savedTheme[ $styleKey ] !== $oldStyleValue
                         ) {
                             $userModified = true;
                             break;
                         }
                     }
 
-                    if (!$userModified) {
+                    if (! $userModified) {
                         // No user customization, replace with new theme
-                        $result['styles'][$theme] = $newTheme;
+                        $result['styles'][ $theme ] = $newTheme;
                     } else {
                         // User modified theme, preserve it
-                        $result['styles'][$theme] = $savedTheme;
+                        $result['styles'][ $theme ] = $savedTheme;
                     }
                 }
             }
@@ -107,23 +109,16 @@ class CalendarPlusConfig
         return $result;
     }
 
-    /**
-     * @param bool $encode
-     * @return array|bool|string
-     */
-    public function getSettings(bool $encode = true)
-    {
-        $settings = [
-            'nonce'  => wp_create_nonce('wp_rest'),
-            'apiUrl' => CalendarPlusAPI::settingsEndpointURL(),
-        ] + $this->settings;
 
-        return $encode
-            ? wp_json_encode(
-                $settings,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-            )
-            : $settings;
+    /**
+     * @return array
+     */
+    public function getSettings(): array
+    {
+        return [
+                'nonce'  => wp_create_nonce('wp_rest'),
+                'apiUrl' => CalendarPlusAPI::settingsEndpointURL(),
+            ] + $this->settings;
     }
 
 

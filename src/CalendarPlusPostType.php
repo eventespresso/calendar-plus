@@ -24,11 +24,23 @@ class CalendarPlusPostType
 
     public const POST_META_KEY = CalendarPlusPostType::EVENT . '-data';
 
+    private bool $show_in_ui_and_menu;
+
+
+    /**
+     * CalendarPlusPostType constructor.
+     *
+     * @param bool $show_in_ui_and_menu
+     */
+    public function __construct(bool $show_in_ui_and_menu = true)
+    {
+        $this->show_in_ui_and_menu = $show_in_ui_and_menu;
+    }
+
 
     public function registerHooks(): void
     {
         add_action('init', [$this, 'registerPostType'], 100);
-        add_action('init', [$this, 'registerPostMeta'], 110);
         add_action('init', [$this, 'registerTaxonomies'], 120);
     }
 
@@ -75,7 +87,7 @@ class CalendarPlusPostType
                 'query_var'          => true,
                 'show_admin_column'  => true,
                 'show_in_quick_edit' => true,
-                'show_in_rest'       => true,
+                'show_in_rest'       => $this->show_in_ui_and_menu,
                 'show_ui'            => true,
             ]
         );
@@ -116,7 +128,7 @@ class CalendarPlusPostType
                 'query_var'             => true,
                 'show_admin_column'     => true,
                 'show_in_quick_edit'    => true,
-                'show_in_rest'          => true,
+                'show_in_rest'          => $this->show_in_ui_and_menu,
                 'show_tagcloud'         => true,
                 'show_ui'               => true,
                 'update_count_callback' => '_update_post_term_count',
@@ -167,9 +179,9 @@ class CalendarPlusPostType
                 'publicly_queryable'  => true,
                 'query_var'           => true,
                 'rest_base'           => CalendarPlusAPI::EVENTS,
-                'show_in_admin_bar'   => true,
-                'show_in_menu'        => true,
-                'show_in_nav_menus'   => true,
+                'show_in_admin_bar'   => $this->show_in_ui_and_menu,
+                'show_in_menu'        => $this->show_in_ui_and_menu,
+                'show_in_nav_menus'   => $this->show_in_ui_and_menu,
                 'show_in_rest'        => true,
                 'show_ui'             => true,
                 'supports'            => [
@@ -192,67 +204,6 @@ class CalendarPlusPostType
                         ],
                     ],
                 ],
-            ]
-        );
-    }
-
-
-    public function registerPostMeta()
-    {
-        $prop_context = ['view', 'edit', 'embed'];
-        register_post_meta(
-            CalendarPlusPostType::EVENT,
-            CalendarPlusPostType::POST_META_KEY,
-            [
-                'type'              => 'object',
-                'description'       => __('Calendar Event data', 'events-calendar-plus'),
-                'single'            => true,
-                'show_in_rest'      => [
-                    'prepare_callback' => [CalendarPlusPostMeta::class, 'prepareForRestApiResponse'],
-                    'schema'           => [
-                        'type'       => 'object',
-                        'properties' => [
-                            'start_datetime' => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'end_datetime'   => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'all_day'        => [
-                                'type'    => 'boolean',
-                                'context' => $prop_context,
-                            ],
-                            'venue'          => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'address'        => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'city'           => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'state'          => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'country'        => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                            'class_name'     => [
-                                'type'    => 'string',
-                                'context' => $prop_context,
-                            ],
-                        ],
-                    ],
-                ],
-                'sanitize_callback' => [CalendarPlusPostMeta::class, 'sanitizeForRestApi'],
-                'auth_callback'     => fn() => current_user_can('edit_posts'),
             ]
         );
     }

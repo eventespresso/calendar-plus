@@ -2,6 +2,8 @@
 
 namespace EventEspresso\CalendarPlus\api;
 
+use EventEspresso\CalendarPlus\frontend\EventDataHandler;
+use Exception;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -19,26 +21,36 @@ class CalendarPlusAPI
 
     public const VERSION  = 'v1';
 
-    public const EVENT    = 'calendar-plus-event';
-
     public const EVENTS   = 'calendar-plus-events';
 
 
     private CalendarPlusConfig $config;
 
+    private EventDataHandler $data_handler;
+
+    private string $plugin_slug;
+
+    private string $version;
+
 
     /**
      * @param CalendarPlusConfig $config
+     * @param EventDataHandler   $data_handler
+     * @param string             $plugin_slug The name of the plugin.
+     * @param string             $version     The version of this plugin.
      */
-    public function __construct(CalendarPlusConfig $config)
+    public function __construct(CalendarPlusConfig $config, EventDataHandler $data_handler, string $plugin_slug, string $version)
     {
-        $this->config = $config;
+        $this->config       = $config;
+        $this->data_handler = $data_handler;
+        $this->plugin_slug  = $plugin_slug;
+        $this->version      = $version;
     }
 
 
     public function registerHooks(): void
     {
-        add_action('rest_api_init', [$this, 'registerAdminRoutes']);
+        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
 
@@ -55,8 +67,20 @@ class CalendarPlusAPI
     }
 
 
-    public function registerAdminRoutes(): void
+    public function registerRoutes(): void
     {
+        // calendar-plus/v1/events
+        register_rest_route(
+            CalendarPlusAPI::endpoint(),
+            'events',
+            [
+                'methods'             => 'POST',
+                'callback'            => [$this, 'getEvents'],
+                'permission_callback' => '__return_true',
+            ]
+        );
+
+        // calendar-plus/v1/settings
         register_rest_route(
             CalendarPlusAPI::endpoint(),
             'settings',
@@ -83,17 +107,64 @@ class CalendarPlusAPI
     }
 
 
+    /**
+     * request body should be in the format:
+     *  {
+     *      "dateRange": {
+     *          "start": "2025-05-01",
+     *          "end": "2025-05-31"
+     *      },
+     *      "offsets": {
+     *          "eventEspresso": 25
+     *      }
+     *  }
+     *
+     * dateRange is required
+     *      start is required
+     *      end is optional and defaults to last day of start month
+     * offsets is optional
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response
+     * @throws Exception
+     * @since 1.0.5
+     */
+    public function getEvents(WP_REST_Request $request): WP_REST_Response
+    {
+        $data = $request->get_json_params();
+        $date_range = $data['dateRange'] ?? [];
+
+        try {
+            $date_range = ! empty($date_range)
+                ? DateRange::createFromArray($date_range)
+                : DateRange::createForCurrentMonth();
+        } catch (Exception $e) {
+            return $this->response(
+                sprintf(
+                    esc_html__('Invalid date range: %s', 'events-calendar-plus'),
+                    $e->getMessage()
+                ),
+                500
+            );
+        }
+        $offsets = $data['offsets'] ?? [];
+        return $this->response($this->data_handler->getEventDataForDateRange($date_range, $offsets));
+    }
+
+
     public function getSettings(): WP_REST_Response
     {
-        return new WP_REST_Response($this->config->getSettings(false), 200);
+        return $this->response($this->config->getSettings());
     }
 
 
     public function saveSettings(WP_REST_Request $request): WP_REST_Response
     {
         $updated = $this->config->updateSettings($request->get_json_params());
-        $msg     =
-            esc_html__('An unknown error occurred while attempting to save the settings', 'events-calendar-plus');
+        $msg     = esc_html__(
+            'An unknown error occurred while attempting to save the settings',
+            'events-calendar-plus'
+        );
         $status  = 500;
         switch ($updated) {
             case CalendarPlusConfig::UPDATE_FAILED:
@@ -110,6 +181,21 @@ class CalendarPlusAPI
                 $status = 200;
                 break;
         }
-        return new WP_REST_Response($msg, $status);
+        return $this->response($msg, $status);
+    }
+
+
+    /**
+     * @param mixed $data   Response data. Default null.
+     * @param int   $status Optional. HTTP status code. Default 200.
+     * @return WP_REST_Response
+     * @since 1.0.5
+     */
+    private function response($data, int $status = 200): WP_REST_Response
+    {
+        if (is_array($data)) {
+            $data["$this->plugin_slug-version"] = $this->version;
+        }
+        return new WP_REST_Response($data, $status);
     }
 }
