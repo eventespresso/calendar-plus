@@ -61,9 +61,10 @@ class CalendarPlusAPI
     }
 
 
-    public static function settingsEndpointURL(): string
+    public static function endpointURL(bool $settings = false): string
     {
-        return esc_url_raw(rest_url(CalendarPlusAPI::endpoint('settings')));
+        $extra_path = $settings ? 'settings' : '';
+        return esc_url_raw(rest_url(CalendarPlusAPI::endpoint($extra_path)));
     }
 
 

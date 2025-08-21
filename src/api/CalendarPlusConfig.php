@@ -117,7 +117,8 @@ class CalendarPlusConfig
     {
         return [
                 'nonce'  => wp_create_nonce('wp_rest'),
-                'apiUrl' => CalendarPlusAPI::settingsEndpointURL(),
+                'apiUrl' => CalendarPlusAPI::endpointURL(),
+                'settingsApiUrl' => CalendarPlusAPI::endpointURL(true),
             ] + $this->settings;
     }
 

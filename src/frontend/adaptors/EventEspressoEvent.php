@@ -200,7 +200,7 @@ class EventEspressoEvent extends EventAdaptor
             $country = '';
 
             if ($venue instanceof EE_Venue) {
-                $address = $venue->address() . ' ' . $venue->address2();
+                $address = $venue->address();
                 $address .= $venue->address2() ? ' ' . $venue->address2() : '';
                 $country = $venue->country_obj();
                 $country = $country instanceof EE_Country ? $country->name() : '';

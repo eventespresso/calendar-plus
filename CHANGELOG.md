@@ -6,23 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Releases
 
-### [1.0.4]
+### [1.0.7]
 
 #### Added
- - [Add Calendar Plus Version String to DOM and API Responses (#1896)](https://github.com/eventespresso/cafe/pull/1896)
- - [Add Calendar Plus Support Admin Page (#1898)](https://github.com/eventespresso/cafe/pull/1898)
  - NEW
 
 #### Fixed
- - [Prevent Migrations From Running on New Calendar Plus Activations (#1905)](https://github.com/eventespresso/cafe/pull/1905)
  - FIX
 
 #### Changed
- - [Fix - All Filters Checkbox Filtering Issue (Barista#1417) (#1890)](https://github.com/eventespresso/cafe/pull/1890)
- - [Refactor Events Calendar Plus Data Loading and Add Data Migration Management (#1881)](https://github.com/eventespresso/cafe/pull/1881)
- - [CalendarPlus Data fetching with api (Barista#1410) (#1902)](https://github.com/eventespresso/cafe/pull/1902)
- - [Fix/Calendar Plus Crash (Barista#1425) (#1903)](https://github.com/eventespresso/cafe/pull/1903)
- - [Add entity caches to ee event adapter (#1868)](https://github.com/eventespresso/cafe/pull/1868)
+ - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)](https://github.com/eventespresso/cafe/pull/1949)
+ - [Removed Events Calendar Plus Address 2 Duplications (#1948)](https://github.com/eventespresso/cafe/pull/1948)
+ - [Fixed Get Direction From Complete Address Details (Barista#1436) (#1950)](https://github.com/eventespresso/cafe/pull/1950)
+ - [Add Setting for Category Text Color (Barista#1432) (#1951)](https://github.com/eventespresso/cafe/pull/1951)
+ - [Fix Events Calendar Plus changelog and readme (#1952)](https://github.com/eventespresso/cafe/pull/1952)
  - MOD
 
 #### Deprecated
@@ -33,6 +30,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Security
  - SEC
+
+
+
+
+
+
+### [1.0.6]
+
+#### Fixed
+ - [Fix Events CalendarPlus API URL on Multi-Site (#1934)](https://github.com/eventespresso/cafe/pull/1934)
+ - [Fix Events CalendarPlus API URL on Multi-Site (Barista#1430) (#1935)](https://github.com/eventespresso/cafe/pull/1935)
+
+
+
+
+
+
+### [1.0.5]
+
+#### Fixed
+ - [Fix WP readme.txt file]
+
+
+
+
+
+
+### [1.0.4]
+
+#### Added
+ - [Add Calendar Plus Version String to DOM and API Responses (#1896)](https://github.com/eventespresso/cafe/pull/1896)
+ - [Add Calendar Plus Support Admin Page (#1898)](https://github.com/eventespresso/cafe/pull/1898)
+
+#### Fixed
+ - [Prevent Migrations From Running on New Calendar Plus Activations (#1905)](https://github.com/eventespresso/cafe/pull/1905)
+
+#### Changed
+ - [Fix - All Filters Checkbox Filtering Issue (Barista#1417) (#1890)](https://github.com/eventespresso/cafe/pull/1890)
+ - [Refactor Events Calendar Plus Data Loading and Add Data Migration Management (#1881)](https://github.com/eventespresso/cafe/pull/1881)
+ - [CalendarPlus Data fetching with api (Barista#1410) (#1902)](https://github.com/eventespresso/cafe/pull/1902)
+ - [Fix/Calendar Plus Crash (Barista#1425) (#1903)](https://github.com/eventespresso/cafe/pull/1903)
+ - [Add entity caches to ee event adapter (#1868)](https://github.com/eventespresso/cafe/pull/1868)
+
+
+
 
 
 

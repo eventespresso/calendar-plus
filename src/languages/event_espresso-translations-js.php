@@ -16,8 +16,18 @@ $generated_i18n_strings = array(
 	// Reference: domains/calendarPlus/admin/src/components/settings/BasicSettings.tsx:79
 	__( 'Select start day of week', 'event_espresso' ),
 
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/CardsGridSection.tsx:102
 	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/GetDirection.tsx:42
 	__( 'Get Directions', 'event_espresso' ),
+
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/CardsGridSection.tsx:54
+	__( 'Unable to get your location. Please enable GPS and try again.', 'event_espresso' ),
+
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/CardsGridSection.tsx:62
+	__( 'Geolocation is not supported by your browser.', 'event_espresso' ),
+
+	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/CardsGridSection.tsx:94
+	__( 'Not Specified. For more details, please contact the organizer.', 'event_espresso' ),
 
 	// Reference: domains/calendarPlus/frontend/src/components/calendar/event-detail-modal/GetDirection.tsx:51
 	__( 'Type your address to get directions', 'event_espresso' ),
