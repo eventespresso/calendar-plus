@@ -6,20 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Releases
 
-### [1.0.7]
-
-#### Added
- - NEW
+### [1.0.8]
 
 #### Fixed
- - FIX
+- [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)](https://github.com/eventespresso/cafe/pull/1953)
 
 #### Changed
- - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)](https://github.com/eventespresso/cafe/pull/1949)
- - [Removed Events Calendar Plus Address 2 Duplications (#1948)](https://github.com/eventespresso/cafe/pull/1948)
- - [Fixed Get Direction From Complete Address Details (Barista#1436) (#1950)](https://github.com/eventespresso/cafe/pull/1950)
- - [Add Setting for Category Text Color (Barista#1432) (#1951)](https://github.com/eventespresso/cafe/pull/1951)
- - [Fix Events Calendar Plus changelog and readme (#1952)](https://github.com/eventespresso/cafe/pull/1952)
  - MOD
 
 #### Deprecated
@@ -30,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Security
  - SEC
+
+
+### [1.0.7]
+
+#### Changed
+ - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)](https://github.com/eventespresso/cafe/pull/1949)
+ - [Removed Events Calendar Plus Address 2 Duplications (#1948)](https://github.com/eventespresso/cafe/pull/1948)
+ - [Fixed Get Direction From Complete Address Details (Barista#1436) (#1950)](https://github.com/eventespresso/cafe/pull/1950)
+ - [Add Setting for Category Text Color (Barista#1432) (#1951)](https://github.com/eventespresso/cafe/pull/1951)
+ - [Fix Events Calendar Plus changelog and readme (#1952)](https://github.com/eventespresso/cafe/pull/1952)
+ - [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)](https://github.com/eventespresso/cafe/pull/1953)
 
 
 

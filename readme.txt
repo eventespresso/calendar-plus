@@ -3,7 +3,7 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires at least: 6.5
 Tested up to: 6.8.2
 Requires PHP: 7.4
@@ -185,7 +185,14 @@ Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
 
-### [1.0.7]
+= [1.0.8] 2025-08-22 =
+
+#### Fixed
+- [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)]
+
+== Changelog ==
+
+= [1.0.7] 2025-08-21 = 
 
 #### Changed
  - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)]
@@ -193,18 +200,18 @@ Remember to always make a backup of your database and files before updating!
  - [Fixed Get Direction From Complete Address Details (Barista#1436) (#1950)]
  - [Add Setting for Category Text Color (Barista#1432) (#1951)]
 
-### [1.0.6]
+= [1.0.6] 2025-07-25 =
 
 #### Fixed
  - [Fix Events CalendarPlus API URL on Multi-Site (#1934)]
  - [Fix Events CalendarPlus API URL on Multi-Site (Barista#1430) (#1935)]
 
-### [1.0.5]
+= [1.0.5] 2025-07-22 =
 
 #### Fixed
  - [Fix WP readme.txt file]
 
-### [1.0.4]
+= [1.0.4] 2025-06-18 =
 
 #### Added
  - [Add Calendar Plus Version String to DOM and API Responses (#1896)]
@@ -220,7 +227,7 @@ Remember to always make a backup of your database and files before updating!
  - [Fix/Calendar Plus Crash (Barista#1425) (#1903)]
  - [Add entity caches to ee event adapter (#1868)]
 
-### [1.0.3]
+= [1.0.3] 2025-05-06 =
 
 #### Added
  - [Implemented Settings for Week Start Day Selection (Barista#1401) (#1835)]
@@ -236,7 +243,7 @@ Remember to always make a backup of your database and files before updating!
  - [Rename Version Files and Fallback to Main File for Version (#1880)]
  - [Seperated i18n Utility Logic for Calendar Domains (Barista#1403) (#1884)]
 
-### [1.0.2]
+= [1.0.2] 2025-04-23 =
 
 #### Fixed
  - [Allow eslint rule jsx no new object as prop (Barista#1384) (#1814)]
@@ -251,7 +258,7 @@ Remember to always make a backup of your database and files before updating!
  - [Fix Collapse Filters on Narrow Screens (Barista#1392) (#1828)]
  - [Added Admin Setting to Show Filters on Top Instead of Sidebar (Barista#1396) (#1829)]
 
-### [1.0.1]
+= [1.0.1] 2025-04-23 =
 
 #### Added
  - [Calendar Plus Event Custom Post Type (#1732)]
@@ -273,6 +280,4 @@ Remember to always make a backup of your database and files before updating!
  - [added datetime id to querystring for event espresso events adapter (#1766)]
  - [Mod/Add or Update readme Files (#1748)]
 
-== Upgrade Notice ==
-= 1.0.0 =
-Initial release of the plugin.
+### For all versions, please see the full [changelog](https://github.com/eventespresso/events-calendar-plus/blob/MAIN/CHANGELOG.md) in our documentation
