@@ -3,7 +3,7 @@
 namespace EventEspresso\CalendarPlus\api;
 
 use EventEspresso\CalendarPlus\frontend\adaptors\EventAdaptor;
-use EventEspresso\CalendarPlus\frontend\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\CalendarEvent;
 
 /**
  * Class QueryResponse

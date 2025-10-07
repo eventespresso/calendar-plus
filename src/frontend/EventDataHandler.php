@@ -5,6 +5,7 @@ namespace EventEspresso\CalendarPlus\frontend;
 use EventEspresso\CalendarPlus\api\DateRange;
 use EventEspresso\CalendarPlus\api\QueryResponse;
 use EventEspresso\CalendarPlus\frontend\adaptors\EventAdaptor;
+use EventEspresso\CalendarPlus\frontend\models\CalendarEvent;
 use Exception;
 
 /**

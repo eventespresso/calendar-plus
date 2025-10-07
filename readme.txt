@@ -3,7 +3,7 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 Requires at least: 6.5
 Tested up to: 6.8.2
 Requires PHP: 7.4
@@ -100,6 +100,9 @@ Manual Installation:
 - Activate the plugin
 
 That's it! Just configure your settings as you see fit, and you're on your way to creating events in style.
+
+Display the Calendar+ Calendar:
+To display a calendar, add the [EVENTS_CALENDAR_PLUS] shortcode on any WordPress page or post.
 == Screenshots ==
 
 1. Month View
@@ -185,12 +188,18 @@ Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
 
+= [1.0.9] 2025-10-07 =
+
+#### Changed
+ - [Fixed Z Index Issue Of Popover For Horizontal Filters (Barista#1439) (#1969)]
+ - [New Events Calendar Plus Shortcodes plugin (#1752)]
+ - [Filter Customization and Shortcodes (Barista#1381) (#1981)]
+ - [Remove Duplicate Events (Barista#1451) (#1996)]
+
 = [1.0.8] 2025-08-22 =
 
 #### Fixed
 - [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)]
-
-== Changelog ==
 
 = [1.0.7] 2025-08-21 = 
 

@@ -4,7 +4,7 @@ namespace EventEspresso\CalendarPlus\frontend\adaptors;
 
 use DateTimeZone;
 use EventEspresso\CalendarPlus\api\DateRange;
-use EventEspresso\CalendarPlus\frontend\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\CalendarEvent;
 
 /**
  * EventAdaptor
@@ -44,6 +44,7 @@ abstract class EventAdaptor
      * @return bool
      */
     abstract public function isApplicable(): bool;
+
 
     /**
      * Should return an array of category NAMES

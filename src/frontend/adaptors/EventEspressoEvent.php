@@ -5,13 +5,15 @@ namespace EventEspresso\CalendarPlus\frontend\adaptors;
 use EE_Datetime;
 use EE_Error;
 use EE_Event;
+use EE_Capabilities;
 use EE_Term;
 use EE_Venue;
 use EEM_Event;
 use EEM_Term;
 use EventEspresso\CalendarPlus\api\DateRange;
 use EventEspresso\CalendarPlus\api\DateTimeHelper;
-use EventEspresso\CalendarPlus\frontend\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\Venue;
 use Exception;
 use ReflectionException;
 use EE_Country;
@@ -110,7 +112,7 @@ class EventEspressoEvent extends EventAdaptor
             }
             foreach ($categories as $category) {
                 if ($category instanceof EE_Term) {
-                    $category_name = $category->name();
+                    $category_name = html_entity_decode($category->name());
                     if (! in_array($category_name, $unique_event_types, true)) {
                         $unique_event_types[] = $category_name;
                     }
@@ -151,7 +153,7 @@ class EventEspressoEvent extends EventAdaptor
             }
             return [];
         }
-        return array_map(fn($tag) => $tag->name, $tags);
+        return array_map(fn($tag) => html_entity_decode($tag->name), $tags);
     }
 
 
@@ -182,7 +184,7 @@ class EventEspressoEvent extends EventAdaptor
             $event_name       .= $date_name ? " - $date_name" : '';
             $start_date       = DateTimeHelper::convertUnixTimestampToDateTime($datetime->start());
             $end_date         = DateTimeHelper::convertUnixTimestampToDateTime($datetime->end());
-            $venue            = $datetime->venue() ?: $event->venue();
+            $venue            = $this->getVenue($event, $datetime);
             $event_meta       = $this->getEventExtraMeta($event);
             $is_all_day       = $event_meta['all_day'] ?? false;
             $event_class_name = $event_meta['class_name'] ?? '';
@@ -190,24 +192,29 @@ class EventEspressoEvent extends EventAdaptor
 
             $permalink   = $event->get_permalink();
             $datetime_id = $datetime->id();
+
             $permalink   = $datetime_id
                 ? add_query_arg('datetime', $datetime_id, $permalink)
                 : $permalink;
 
-            $address = '';
-            $city    = '';
-            $state   = '';
-            $country = '';
+            $venue_id   = -1;
+            $venue_name = '';
+            $address    = '';
+            $city       = '';
+            $state      = '';
+            $country    = '';
 
             if ($venue instanceof EE_Venue) {
+				$venue_id = $venue->ID();
+				$venue_name = $venue->name();
                 $address = $venue->address();
                 $address .= $venue->address2() ? ' ' . $venue->address2() : '';
+				$city = $venue->city();
                 $country = $venue->country_obj();
                 $country = $country instanceof EE_Country ? $country->name() : '';
                 $state   = $venue->state_obj();
                 $state   = $state instanceof EE_State ? $state->name() : '';
-                $city    = $venue->city();
-            }
+			}
 
             $categories = $this->getEventCategories($event->ID());
             $categories = implode(', ', $categories);
@@ -227,11 +234,14 @@ class EventEspressoEvent extends EventAdaptor
                 get_the_post_thumbnail_url($event->ID(), 'large'),          // string $image = ''
                 $event_class_name,                                          // string $class_name = ''
                 $tags,                                                      // string $tags = ''
-                $venue instanceof EE_Venue ? $venue->name() : '',           // string $venue = ''
-                $address,                                                   // string $address = ''
-                $city,                                                      // string $city = ''
-                $state,                                                     // string $state = ''
-                $country                                                    // string $country = ''
+				new Venue(
+					$venue_id,
+					$venue_name,
+					$address,
+					$city,
+					$state,
+					$country
+				)
             );
         } catch (Exception $exception) {
             $this->logError($exception);
@@ -267,7 +277,7 @@ class EventEspressoEvent extends EventAdaptor
                 $date_range,
                 EEM_Event::instance()->get_all(
                     [
-                        EEM_Event::instance()->set_where_conditions_for_status(
+                        $this->setWhereConditionsForStatus(
                             [
                                 'Datetime.DTT_EVT_start' => [
                                     '>=',
@@ -314,7 +324,7 @@ class EventEspressoEvent extends EventAdaptor
              */
             $this->event_count = EEM_Event::instance()->count(
                 [
-                    EEM_Event::instance()->set_where_conditions_for_status(
+                    $this->setWhereConditionsForStatus(
                         [
                             'Datetime.DTT_EVT_start' => [
                                 '>=',
@@ -333,6 +343,60 @@ class EventEspressoEvent extends EventAdaptor
             $this->logError($exception);
         }
         return 0;
+    }
+
+
+    /**
+     * Shim to use built in set_where_conditions_for_status() method if avaiable
+     *
+     * @param array $where_params
+     * @return array
+     * @since {VID}
+     */
+    private function setWhereConditionsForStatus(array $where_params) {
+        // Check if this is available within core
+        if(method_exists('EEM_Event', 'set_where_conditions_for_status')) {
+            return EEM_Event::instance()->set_where_conditions_for_status($where_params);
+        }
+
+        // If not use published and sold_out events
+        $event_status = ['publish', EEM_Event::sold_out];
+        // check if the user can read private events and if so add the 'private' status to the where params
+        if (EE_Capabilities::instance()->current_user_can('ee_read_private_events', 'get_upcoming_events')) {
+            $event_status[] = 'private';
+        }
+        $where_params['status'] = ['IN', $event_status];
+        return $where_params;
+    }
+
+
+    /**
+     * Shim to use built in Datetime/Event venues and fallback to legacy if unavailable
+     *
+     * @param EE_Event $event
+     * @param EE_Datetime $datetime
+     * @return null|EE_Venue
+     * @since {VID}
+     */
+    private function getVenue(EE_Event $event, EE_Datetime $datetime) {
+        // Venue set on the datetime?
+        if(method_exists($datetime, 'venue')) {
+            $venue = $datetime->venue();
+            if($venue instanceof EE_Venue) {
+                return $venue;
+            }
+        }
+        // Venue set on the event? Try to use the venue() method
+        if(method_exists($event, 'venue')) {
+            $venue = $event->venue();
+            if($venue instanceof EE_Venue) {
+                return $venue;
+            }
+        }
+        // Still no venue? Fallback to legacy method
+        $venue = $event->venues(['limit' => 1]);
+        $venue = is_array($venue) ? array_shift($venue) : $venue;
+        return $venue instanceof EE_Venue ? $venue : null;
     }
 
 

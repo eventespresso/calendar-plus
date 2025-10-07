@@ -238,10 +238,10 @@ class Assets
             if (! empty($asset_files[ $entry_point . Assets::FILE_EXT_PHP ])) {
                 $asset_file   = $assets_path . $asset_files[ $entry_point . Assets::FILE_EXT_PHP ];
                 $asset        = file_exists($asset_file) ? require($asset_file) : [];
-                $dependencies = $asset['dependencies'] ?? null;
+                $dependencies = $asset['dependencies'] ?? [];
                 $version      = $asset['version'] ?? null;
                 // remove cyclical dependencies, if any
-                if (($key = array_search($handle, $dependencies, true)) !== false) {
+                if ($dependencies && ($key = array_search($handle, $dependencies, true)) !== false) {
                     unset($dependencies[ $key ]);
                 }
             }

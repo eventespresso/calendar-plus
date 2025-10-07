@@ -322,7 +322,8 @@
 /* WP PLUGINS PAGE */
 
 .wp-admin.wp-core-ui.plugins-php .plugins {
-    tr[data-slug="events-calendar-plus"].active {
+    tr[data-slug="events-calendar-plus"].active,
+    tr[data-slug="events-calendar-plus-shortcodes"].active {
         th {
             background-color: hsl(237 50% 97.5%);
             border-left-color: hsl(237 40% 70%);

@@ -21,8 +21,6 @@ class PluginActivation
 
     /**
      * Initializes CalendarPlus Config.
-     *
-     * @since    1.0.0
      */
     public static function activate()
     {
@@ -93,9 +91,6 @@ class PluginActivation
     }
 
 
-    /**
-     * @since    1.0.0
-     */
     public static function deactivate()
     {
         // If uninstall not called from WordPress, then exit.

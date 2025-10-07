@@ -5,27 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Releases
+### [1.0.9]
+ - [Fixed Z Index Issue Of Popover For Horizontal Filters (Barista#1439) (#1969)](https://github.com/eventespresso/cafe/pull/1969)
+ - [New Events Calendar Plus Shortcodes plugin (#1752)](https://github.com/eventespresso/cafe/pull/1752)
+ - [Filter Customization and Shortcodes (Barista#1381) (#1981)](https://github.com/eventespresso/cafe/pull/1981)
+ - [Remove Duplicate Events (Barista#1451) (#1996)](https://github.com/eventespresso/cafe/pull/1996)
+
+
 
 ### [1.0.8]
-
 #### Fixed
 - [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)](https://github.com/eventespresso/cafe/pull/1953)
 
-#### Changed
- - MOD
-
-#### Deprecated
- - DEP
-
-#### Removed
- - RMV
-
-#### Security
- - SEC
 
 
 ### [1.0.7]
-
 #### Changed
  - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)](https://github.com/eventespresso/cafe/pull/1949)
  - [Removed Events Calendar Plus Address 2 Duplications (#1948)](https://github.com/eventespresso/cafe/pull/1948)
@@ -36,32 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-
-
-
 ### [1.0.6]
-
 #### Fixed
  - [Fix Events CalendarPlus API URL on Multi-Site (#1934)](https://github.com/eventespresso/cafe/pull/1934)
  - [Fix Events CalendarPlus API URL on Multi-Site (Barista#1430) (#1935)](https://github.com/eventespresso/cafe/pull/1935)
 
 
 
-
-
-
 ### [1.0.5]
-
 #### Fixed
  - [Fix WP readme.txt file]
 
 
 
-
-
-
 ### [1.0.4]
-
 #### Added
  - [Add Calendar Plus Version String to DOM and API Responses (#1896)](https://github.com/eventespresso/cafe/pull/1896)
  - [Add Calendar Plus Support Admin Page (#1898)](https://github.com/eventespresso/cafe/pull/1898)
@@ -78,11 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-
-
-
 ### [1.0.3]
-
 #### Added
  - [Implemented Settings for Week Start Day Selection (Barista#1401) (#1835)](https://github.com/eventespresso/cafe/pull/1835)
  - [Add Query Params Support (Barista#1402)](https://github.com/eventespresso/barista/pull/1402)
@@ -99,12 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-
-
-
 ### [1.0.2]
-
-
 #### Fixed
  - [Allow eslint rule jsx no new object as prop (Barista#1384) (#1814)](https://github.com/eventespresso/cafe/pull/1814)
  - [Fix/cp/default settings migration (#1816)](https://github.com/eventespresso/cafe/pull/1816)
@@ -120,10 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-
-
 ### [1.0.1]
-
 #### Added
  - [Calendar Plus Event Custom Post Type (#1732)](https://github.com/eventespresso/cafe/pull/1732)
  - [Add Default Dark Mode Colors (Barista#1380) (#1803)](https://github.com/eventespresso/cafe/pull/1803)

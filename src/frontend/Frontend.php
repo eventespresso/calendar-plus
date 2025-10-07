@@ -55,13 +55,27 @@ class Frontend
 
     public function registerHooks(): void
     {
-        add_shortcode('EVENTS_CALENDAR_PLUS', [$this, 'calendarShortcode']);
+        add_action('init', [$this, 'registerShortcodes'], 11);
         add_action('wp_enqueue_scripts', [$this, 'enqueueScripts'], 99);
         add_filter('the_content', [$this, 'postContent']);
     }
 
 
-    public function calendarShortcode(): string
+    public function registerShortcodes(): void
+    {
+        $shortcodes = apply_filters(
+            'FHEE__EventEspresso_CalendarPlus_frontend_Frontend__registerShortcodes__shortcodes',
+            ['EVENTS_CALENDAR_PLUS' => [$this, 'defaultCalendarShortcode']]
+        );
+        foreach ($shortcodes as $shortcode => $callback) {
+            if (is_callable($callback)) {
+                add_shortcode($shortcode, $callback);
+            }
+        }
+    }
+
+
+    public function defaultCalendarShortcode(): string
     {
         return '<div id="calendar-plus" class="calendar-plus"></div>';
     }

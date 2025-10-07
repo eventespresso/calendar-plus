@@ -5,7 +5,8 @@ namespace EventEspresso\CalendarPlus\frontend\adaptors;
 use EventEspresso\CalendarPlus\api\DateRange;
 use EventEspresso\CalendarPlus\CalendarPlusPostMeta;
 use EventEspresso\CalendarPlus\CalendarPlusPostType;
-use EventEspresso\CalendarPlus\frontend\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\CalendarEvent;
+use EventEspresso\CalendarPlus\frontend\models\Venue;
 use Exception;
 use WP_Post;
 use WP_Query;
@@ -87,7 +88,7 @@ class CalendarPlusEvent extends EventAdaptor
             return [];
         }
 
-        return array_map(fn(WP_Term $category) => $category->name, $categories);
+        return array_map(fn(WP_Term $category) => html_entity_decode($category->name), $categories);
     }
 
 
@@ -124,7 +125,7 @@ class CalendarPlusEvent extends EventAdaptor
             return [];
         }
 
-        return array_map(fn(WP_Term $tag) => $tag->name, $tags);
+        return array_map(fn(WP_Term $tag) => html_entity_decode($tag->name), $tags);
     }
 
 
@@ -156,11 +157,14 @@ class CalendarPlusEvent extends EventAdaptor
                 get_the_post_thumbnail_url($post_ID, 'large'),
                 CalendarPlusPostMeta::cssClass($post_ID),
                 $tags_string,
-                CalendarPlusPostMeta::venue($post_ID),
-                CalendarPlusPostMeta::address($post_ID),
-                CalendarPlusPostMeta::city($post_ID),
-                CalendarPlusPostMeta::state($post_ID),
-                CalendarPlusPostMeta::country($post_ID),
+				new Venue(
+					0,
+	                CalendarPlusPostMeta::venue($post_ID),
+	                CalendarPlusPostMeta::address($post_ID),
+	                CalendarPlusPostMeta::city($post_ID),
+	                CalendarPlusPostMeta::state($post_ID),
+	                CalendarPlusPostMeta::country($post_ID)
+				)
             );
         } catch (Exception $e) {
             if (WP_DEBUG) {
