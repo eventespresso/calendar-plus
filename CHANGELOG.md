@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Releases
+### [1.0.10]
+ - [Missing file fix]
+
 ### [1.0.9]
  - [Fixed Z Index Issue Of Popover For Horizontal Filters (Barista#1439) (#1969)](https://github.com/eventespresso/cafe/pull/1969)
  - [New Events Calendar Plus Shortcodes plugin (#1752)](https://github.com/eventespresso/cafe/pull/1752)

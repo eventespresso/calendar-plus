@@ -3,9 +3,9 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 Requires at least: 6.5
-Tested up to: 6.8.2
+Tested up to: 6.8
 Requires PHP: 7.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -188,6 +188,12 @@ Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
 
+= [1.0.10] 2025-10-07 =
+
+#### Changed
+ - [Missing file fix]
+
+
 = [1.0.9] 2025-10-07 =
 
 #### Changed
@@ -201,7 +207,7 @@ Remember to always make a backup of your database and files before updating!
 #### Fixed
 - [Fixed Incorrect Import of i18n Utility from EE Core (Barista#1438) (#1953)]
 
-= [1.0.7] 2025-08-21 = 
+= [1.0.7] 2025-08-21 =
 
 #### Changed
  - [Fixed Empty Placeholder Showing On Detail Modals When No Tags Or Categories Are There (Barista#1431) (#1949)]
