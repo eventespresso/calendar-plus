@@ -2,6 +2,8 @@
 
 namespace EventEspresso\CalendarPlus\frontend;
 
+use EventEspresso\CalendarPlus\CalendarPlusModule;
+
 /**
  * Maintenance
  *
@@ -11,13 +13,9 @@ namespace EventEspresso\CalendarPlus\frontend;
  * @subpackage  CalendarPlus/frontend
  * @author      Brent Christensen
  */
-class Maintenance
+class Maintenance extends CalendarPlusModule
 {
     private string $assets_url;
-
-    private string $plugin_slug;
-
-    private string $version;
 
 
     /**
@@ -27,8 +25,7 @@ class Maintenance
      */
     public function __construct(string $plugin_slug, string $version)
     {
-        $this->plugin_slug = $plugin_slug;
-        $this->version     = $version;
+        parent::__construct($plugin_slug, $version);
         $this->assets_url  = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/frontend/assets';
     }
 
@@ -69,10 +66,10 @@ class Maintenance
     public function enqueueAdminScriptsAndStyles(): void
     {
         wp_enqueue_style(
-            $this->plugin_slug,
+            $this->pluginSlug(),
             "$this->assets_url/calendar-plus-maintenance.css",
             [],
-            $this->version
+            $this->version()
         );
     }
 }

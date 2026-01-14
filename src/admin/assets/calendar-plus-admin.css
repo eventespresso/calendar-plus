@@ -42,8 +42,6 @@
 }
 
 
-
-
 /* C+ Settings Page */
 
 .wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-settings {
@@ -61,10 +59,9 @@
 }
 
 
+/* Custom C+ Admin Pages (non-WP) like Support */
 
-/* C+ Support Page */
-
-.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-support {
+.wp-admin.wp-core-ui.events-calendar-plus-admin {
 
     --ecp-page-bg: hsl(200 12% 97.5%);
     --ecp-header-bg: hsl(236 50% 90%);
@@ -76,11 +73,34 @@
     --ecp-text-color: hsl(0 0% 0% / 75%);
     --ecp-dashicons-color: hsl(237 27.5% 27% / 75%);
 
-    --ecp-link-color: hsl(207, 77%, 52%);
+    --ecp-link-color: hsl(199, 35%, 64%);
     --ecp-link-hover: hsl(207, 87%, 52%);
 
-    --ecp-code-bg: hsl(200 12% 90% / 90%);
+    --ecp-info-color: hsl(199, 40%, 75%);
+    --ecp-info-text: hsl(252, 5%, 15%);
+
+    --ecp-success-color: hsl(109, 34%, 73%);
+    --ecp-success-text: hsl(252, 5%, 15%);
+
+    --ecp-warning-color: hsl(69, 58%, 67%);
+    --ecp-warning-text: hsl(252, 5%, 19%);
+
+    --ecp-danger-color: hsl(346, 80%, 70%);
+    --ecp-danger-text: hsl(252 5% 5%);
+
+    --ecp-input-height: 2.5rem;
+    --ecp-button-color: hsl(237 67% 67%);
+    --ecp-button-hover: hsl(237 87% 67%);
+    --ecp-button-text: hsl(237 0% 100%);
+    --ecp-button-disabled: hsl(237 15% 37%);
+    --ecp-button-disabled-text: hsl(237 0% 50%);
+
+    --ecp-code-bg: hsl(200 20% 90% / 60%);
+    --ecp-code-border: hsl(200 6% 85%);
     --ecp-code-text: hsl(84, 50%, 7.5%);
+
+    --ecp-notice-bg: hsl(0 0% 100%);
+    --ecp-notice-border: hsl(225 5% 80%);
 
     @media (prefers-color-scheme: dark) {
         --ecp-page-bg: hsl(200 12% 20%);
@@ -93,14 +113,24 @@
         --ecp-text-color: hsl(0 0% 100% / 92%);
         --ecp-dashicons-color: hsl(237 57.25% 77% / 75%);
 
-        --ecp-link-color: hsl(207, 77%, 62%);
-        --ecp-link-hover: hsl(207, 87%, 62%);
+        --ecp-link-color: hsl(207, 85%, 70%);
+        --ecp-link-hover: hsl(207, 95%, 70%);
 
         --ecp-code-bg: hsl(200 12% 10%);
-        --ecp-code-text: hsl(84, 75%, 75%);
+        --ecp-code-border: hsl(200 6% 12.5%);
+        --ecp-code-text: hsl(199, 75%, 75%);
+        --ecp-shortcode-text: hsl(199, 100%, 75%);
+
+        --ecp-notice-bg: hsl(200 12% 15%);
+        --ecp-notice-border: hsl(225 5% 20%);
+
+        input {
+            color-scheme: dark;
+        }
     }
 
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /* body styles */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 1rem;
     color: var(--ecp-text-color);
     background: var(--ecp-page-bg);
@@ -121,8 +151,9 @@
                 font-weight: 700;
                 line-height: 1.1;
                 margin-block-start: 1rem;
-                margin-block-end: .25rem;
+                margin-block-end: .5rem;
             }
+
             h1 {
                 color: var(--ecp-heading-accent);
                 font-size: clamp(2.5rem, 4.5vw, 5rem);
@@ -130,16 +161,20 @@
                 padding: 0;
                 text-wrap: balance;
             }
+
             h2 {
-                font-size: clamp(2rem, 3.5vw, 3rem);
+                font-size: clamp(1.75rem, 3.5vw, 3rem);
                 margin-block-start: 0;
             }
+
             h3 {
-                font-size: clamp(1.75rem, 2.75vw, 2.75rem);
+                font-size: clamp(1.5rem, 2.75vw, 2.75rem);
             }
+
             h4 {
-                font-size: clamp(1.5rem, 2.25vw, 2.25rem);
+                font-size: clamp(1.375rem, 2.25vw, 2.25rem);
             }
+
             h5 {
                 color: var(--ecp-heading-accent);
                 font-size: clamp(1.1875rem, 1.5vw, 1.75rem);
@@ -164,11 +199,43 @@
                 }
             }
 
+            .info,
+            .danger,
+            .success,
+            .warning {
+                border-radius: .25rem;
+                font-size: clamp(.9rem, 1.25vw, 1.125rem);
+                font-weight: 500;
+                line-height: 1.375;
+                padding: clamp(.5rem, .75vw, 1rem) clamp(.75rem, 1.5vw, 2rem);
+            }
+
+            .info {
+                background-color: var(--ecp-info-color);
+                color: var(--ecp-info-text);
+            }
+
+            .success {
+                background-color: var(--ecp-success-color);
+                color: var(--ecp-success-text);
+            }
+
+            .danger {
+                background-color: var(--ecp-danger-color);
+                color: var(--ecp-danger-text);
+            }
+
+            .warning {
+                background-color: var(--ecp-warning-color);
+                color: var(--ecp-warning-text);
+            }
+
             code {
                 background-color: var(--ecp-code-bg);
                 border-radius: .125rem;
-                color: var(--ecp-code-text);
+                color: var(--ecp-shortcode-text);
                 font-family: "Courier New", Courier, monospace;
+                font-weight: 500;
                 padding: .125rem;
             }
 
@@ -178,118 +245,131 @@
                 display: flex;
                 justify-content: space-between;
                 margin-block: 0;
-                padding: clamp(2rem, 2vw, 4rem) clamp(4rem, 4vw, 8rem);
+                padding: clamp(1rem, 2vw, 4rem) clamp(2rem, 4vw, 8rem);
                 width: 100%;
 
 
                 .dashicons {
                     color: var(--ecp-dashicons-color);
                     margin-inline-start: 2vw;
-
-                    &.dashicons-sos {
-                        font-size: clamp(3.5rem, 4.5vw, 7rem);
-                        height: clamp(3.5rem, 4.5vw, 7rem);
-                        width: clamp(3.5rem, 4.5vw, 7rem);
-
-                        :before {
-                            height: clamp(3.5rem, 4.5vw, 7rem);
-                            width: clamp(3.5rem, 4.5vw, 7rem);
-                        }
-                    }
-
-                    &.dashicons-editor-help {
-                        font-size: clamp(4rem, 5vw, 8rem);
-                        height: clamp(4rem, 5vw, 8rem);
-                        width: clamp(4rem, 5vw, 8rem);
-                        :before {
-                            height: clamp(4rem, 5vw, 8rem);
-                            width: clamp(4rem, 5vw, 8rem);
-                        }
-                    }
                 }
             }
 
-            .intro {
-                background-color: var(--ecp-intro-bg);
-                margin-block: 0;
-                padding: clamp(2rem, 2vw, 4rem) clamp(4rem, 4vw, 8rem);
-                width: 100%;
-            }
+            .calendar-plus-support {
+                .header {
+                    .dashicons {
+                        &.dashicons-sos {
+                            font-size: clamp(3.5rem, 4.5vw, 7rem);
+                            height: clamp(3.5rem, 4.5vw, 7rem);
+                            width: clamp(3.5rem, 4.5vw, 7rem);
 
-            .installation {
-                margin-block: 0;
-                padding: clamp(1.5rem, 1.5vw, 3rem) clamp(4rem, 3vw, 8rem);
-                width: 100%;
-            }
+                            :before {
+                                height: clamp(3.5rem, 4.5vw, 7rem);
+                                width: clamp(3.5rem, 4.5vw, 7rem);
+                            }
+                        }
 
-            .faqs-hdr {
-                text-align: center;
-            }
+                        &.dashicons-editor-help {
+                            font-size: clamp(4rem, 5vw, 8rem);
+                            height: clamp(4rem, 5vw, 8rem);
+                            width: clamp(4rem, 5vw, 8rem);
 
-            .faqs-wrapper {
-                display: grid;
-                gap: clamp(1rem, 2vw, 4rem);
-                grid-template-areas:
+                            :before {
+                                height: clamp(4rem, 5vw, 8rem);
+                                width: clamp(4rem, 5vw, 8rem);
+                            }
+                        }
+                    }
+                }
+
+                .intro {
+                    background-color: var(--ecp-intro-bg);
+                    margin-block: 0;
+                    padding: clamp(1rem, 2vw, 4rem) clamp(2rem, 4vw, 8rem);
+                    width: 100%;
+                }
+
+                .installation {
+                    margin-block: 0;
+                    padding: clamp(1rem, 1.5vw, 3rem) clamp(2rem, 3vw, 8rem);
+                    width: 100%;
+                }
+
+                .faqs-hdr {
+                    text-align: center;
+                }
+
+                .faqs-wrapper {
+                    display: grid;
+                    gap: clamp(1rem, 2vw, 4rem);
+                    grid-template-areas:
                     "gq em"
                     "tc tr"
                     "tc st"
                     "sup sup";
-                margin-block: 0;
-                max-width: 100%;
-                padding: clamp(1rem, 2vw, 3rem) clamp(1rem, 2vw, 4rem);
-                width: 100%;
+                    margin-block: 0;
+                    max-width: 100%;
+                    padding: clamp(1rem, 2vw, 3rem) clamp(1rem, 2vw, 4rem);
+                    width: 100%;
 
-                @media (max-width: 60rem) {
-                    grid-template-areas:
+                    @media (max-width: 60rem) {
+                        grid-template-areas:
                         "gq"
                         "em"
                         "tc"
                         "tr"
                         "st"
                         "sup";
-                    padding: 1rem;
-                }
-
-                .faqs {
-                    background-color: var(--ecp-faqs-bg);
-                    border-radius: 2rem;
-                    padding: 2rem 3rem;
-
-                    @media (max-width: 30rem) {
-                        padding: 1.5rem 2.25rem;
+                        padding: 1rem;
                     }
 
-                    &.gq {
-                        grid-area: gq;
-                    }
-                    &.em {
-                        grid-area: em;
-                    }
-                    &.tc {
-                        grid-area: tc;
-                    }
-                    &.tr {
-                        grid-area: tr;
-                    }
-                    &.st {
-                        grid-area: st;
-                    }
-                    &.support {
-                        grid-area: sup;
-                    }
+                    .faqs {
+                        background-color: var(--ecp-faqs-bg);
+                        border-radius: 2rem;
+                        padding: 2rem 3rem;
 
-
-                    p.ecp-answer {
-                        margin-block-end: 3rem;
-
-                        &:last-child {
-                            margin-block-end: 1rem;
+                        @media (max-width: 30rem) {
+                            border-radius: 1rem;
+                            padding: 1rem 2rem;
                         }
 
-                        span:first-child {
-                            color: var(--ecp-heading-accent);
-                            font-weight: 700;
-                            font-size: clamp(1.1875rem, 1.5vw, 1.75rem);
+                        &.gq {
+                            grid-area: gq;
+                        }
+
+                        &.em {
+                            grid-area: em;
+                        }
+
+                        &.tc {
+                            grid-area: tc;
+                        }
+
+                        &.tr {
+                            grid-area: tr;
+                        }
+
+                        &.st {
+                            grid-area: st;
+                        }
+
+                        &.support {
+                            grid-area: sup;
+                        }
+
+
+                        p.ecp-answer {
+                            margin-block-end: 3rem;
+
+                            &:last-child {
+                                margin-block-end: 1rem;
+                            }
+
+                            span.answer-abbr {
+                                color: var(--ecp-heading-accent);
+                                font-weight: 700;
+                                font-size: clamp(1.1875rem, 1.5vw, 1.75rem);
+                            }
                         }
                     }
                 }
@@ -297,18 +377,6 @@
         }
     }
 
-}
-
-
-
-.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-settings,
-.wp-admin.wp-core-ui.calendar-event_page_events-calendar-plus-support {
-    --ecp-notice-bg: hsl(0 0% 100%);
-    --ecp-notice-border: hsl(225 5% 80%);
-    @media (prefers-color-scheme: dark) {
-        --ecp-notice-bg: hsl(200 12% 15%);
-        --ecp-notice-border: hsl(225 5% 20%);
-    }
     .notice, div.error, div.updated {
         background-color: var(--ecp-notice-bg) !important;
         border-block-color: var(--ecp-notice-border);
@@ -318,18 +386,16 @@
 }
 
 
-
 /* WP PLUGINS PAGE */
-
 .wp-admin.wp-core-ui.plugins-php .plugins {
-    tr[data-slug="events-calendar-plus"].active,
-    tr[data-slug="events-calendar-plus-shortcodes"].active {
+    tr[data-slug^="events-calendar-plus"].active {
         th {
-            background-color: hsl(237 50% 97.5%);
-            border-left-color: hsl(237 40% 70%);
+            background-color: hsl(237 80% 97.5%);
+            border-left-color: hsl(237 50% 70%);
         }
+
         td {
-            background-color: hsl(237 50% 97.5%);
+            background-color: hsl(237 80% 97.5%);
         }
     }
 }

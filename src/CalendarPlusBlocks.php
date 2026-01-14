@@ -10,24 +10,22 @@ namespace EventEspresso\CalendarPlus;
  * @author      Brent Christensen
  * @since       1.0.2
  */
-class CalendarPlusBlocks
+class CalendarPlusBlocks extends CalendarPlusModule
 {
     private string $build_path;
 
     private string $build_url;
 
-    private string $plugin_slug;
-
 
     /**
-     * /**
      * @param string $plugin_slug
+     * @param string $version
      */
-    public function __construct(string $plugin_slug)
+    public function __construct(string $plugin_slug, string $version)
     {
+        parent::__construct($plugin_slug, $version);
         $this->build_path  = EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/blocks/build/';
         $this->build_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/blocks/build/';
-        $this->plugin_slug = $plugin_slug;
     }
 
 
@@ -57,7 +55,7 @@ class CalendarPlusBlocks
             ? include $asset_path
             : [
                 'dependencies' => [],
-                'version'      => microtime(),
+                'version'      => $this->version(),
             ];
     }
 
@@ -74,17 +72,17 @@ class CalendarPlusBlocks
         $asset_file = $this->getAssetFile('config');
         // enqueue the script
         wp_enqueue_script(
-            $this->plugin_slug . 'config',
+            $this->pluginSlug() . '-config',
             $this->build_url . 'config.js',
             [...$asset_file['dependencies'], 'wp-edit-post'],
             wp_get_environment_type() !== 'production'
-                ? EVENTS_CALENDAR_PLUS_VERSION . '.' . time()
+                ? $this->version()
                 : $asset_file['version'],
             ['in_footer' => true]
         );
 
         wp_localize_script(
-            $this->plugin_slug . 'config',
+            $this->pluginSlug() . '-config',
             'postData',
             ['postType' => get_post_type(get_the_id())]
         );

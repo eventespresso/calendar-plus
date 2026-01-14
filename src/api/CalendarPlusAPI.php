@@ -2,8 +2,10 @@
 
 namespace EventEspresso\CalendarPlus\api;
 
+use EventEspresso\CalendarPlus\CalendarPlusModule;
 use EventEspresso\CalendarPlus\frontend\EventDataHandler;
 use Exception;
+use WP_HTTP_Response;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -15,22 +17,17 @@ use WP_REST_Response;
  * @author      Mohsin Sabir
  * @since       1.0.0
  */
-class CalendarPlusAPI
+class CalendarPlusAPI extends CalendarPlusModule
 {
     public const ENDPOINT = 'calendar-plus';
-
     public const VERSION  = 'v1';
-
     public const EVENTS   = 'calendar-plus-events';
 
+    public const NONCE_ACTION_UPDATE_SETTINGS = 'wp_rest';
 
     private CalendarPlusConfig $config;
 
     private EventDataHandler $data_handler;
-
-    private string $plugin_slug;
-
-    private string $version;
 
 
     /**
@@ -41,15 +38,15 @@ class CalendarPlusAPI
      */
     public function __construct(CalendarPlusConfig $config, EventDataHandler $data_handler, string $plugin_slug, string $version)
     {
+        parent::__construct($plugin_slug, $version);
         $this->config       = $config;
         $this->data_handler = $data_handler;
-        $this->plugin_slug  = $plugin_slug;
-        $this->version      = $version;
     }
 
 
     public function registerHooks(): void
     {
+        add_action('rest_api_init', [$this, 'enableCORS']);
         add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
@@ -68,6 +65,47 @@ class CalendarPlusAPI
     }
 
 
+    /**
+     * Adds scoped CORS headers for Calendar Plus API routes.
+     */
+    public function enableCORS(): void
+    {
+        add_filter('rest_pre_serve_request',  [$this, 'restPreServeRequest'], 10, 3);
+    }
+
+
+    public function restPreServeRequest(bool $served, WP_HTTP_Response $result, WP_REST_Request $request): bool
+    {
+        try {
+            $route = $request->get_route(); // like "/calendar-plus/v1/events"
+            $namespace = '/' . CalendarPlusAPI::endpoint();
+
+            if (strpos($route, $namespace) !== 0) {
+                return $served;
+            }
+
+            // allow GET/POST/OPTIONS from any origin
+            header('Access-Control-Allow-Origin: *');
+            header('Vary: Origin');
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+            // short-circuit preflight
+            if ($request->get_method() === 'OPTIONS') {
+                header('Content-Length: 0');
+                status_header(204);
+                return true;
+            }
+        } catch (Exception $e) {
+            // eat it, but log in debug
+            if (WP_DEBUG) {
+                error_log('[CalendarPlusAPI CORS] ' . $e->getMessage());
+            }
+        }
+        return $served;
+    }
+
+
     public function registerRoutes(): void
     {
         // calendar-plus/v1/events
@@ -81,6 +119,17 @@ class CalendarPlusAPI
             ]
         );
 
+        // allow preflight on events
+        register_rest_route(
+            CalendarPlusAPI::endpoint(),
+            'events',
+            [
+                'methods'             => 'OPTIONS',
+                'callback'            => '__return_true',
+                'permission_callback' => '__return_true',
+            ]
+        );
+
         // calendar-plus/v1/settings
         register_rest_route(
             CalendarPlusAPI::endpoint(),
@@ -88,9 +137,8 @@ class CalendarPlusAPI
             [
                 'methods'             => 'GET',
                 'callback'            => [$this, 'getSettings'],
-                'permission_callback' => function () {
-                    return current_user_can('manage_options');
-                },
+                // settings are publically accessible because anyone viewing a calendar will require those settings
+                'permission_callback' => '__return_true',
             ]
         );
 
@@ -100,9 +148,21 @@ class CalendarPlusAPI
             [
                 'methods'             => 'POST',
                 'callback'            => [$this, 'saveSettings'],
+                // settings can only be modified by admins and therefor require permissions
                 'permission_callback' => function () {
                     return current_user_can('manage_options');
                 },
+            ]
+        );
+
+        // allow preflight on settings
+        register_rest_route(
+            CalendarPlusAPI::endpoint(),
+            'settings',
+            [
+                'methods'             => 'OPTIONS',
+                'callback'            => '__return_true',
+                'permission_callback' => '__return_true',
             ]
         );
     }
@@ -155,13 +215,21 @@ class CalendarPlusAPI
 
     public function getSettings(): WP_REST_Response
     {
-        return $this->response($this->config->getSettings());
+        return $this->response($this->config->getSettings(true));
     }
 
 
     public function saveSettings(WP_REST_Request $request): WP_REST_Response
     {
-        $updated = $this->config->updateSettings($request->get_json_params());
+        $settings = $request->get_json_params();
+        // check nonce
+        if (! wp_verify_nonce($settings['nonce'], CalendarPlusAPI::NONCE_ACTION_UPDATE_SETTINGS)) {
+            return $this->response(
+                esc_html__('Failed to save settings: nonce failed!', 'events-calendar-plus'),
+                500
+            );
+        }
+        $updated = $this->config->updateSettings($settings);
         $msg     = esc_html__(
             'An unknown error occurred while attempting to save the settings',
             'events-calendar-plus'
@@ -195,7 +263,7 @@ class CalendarPlusAPI
     private function response($data, int $status = 200): WP_REST_Response
     {
         if (is_array($data)) {
-            $data["$this->plugin_slug-version"] = $this->version;
+            $data["{$this->pluginSlug()}-version"] = $this->version();
         }
         return new WP_REST_Response($data, $status);
     }

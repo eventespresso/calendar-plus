@@ -28,13 +28,8 @@ use EventEspresso\CalendarPlus\tools\Request;
  * @subpackage CalendarPlus/includes
  * @author     Event Espresso <support@eventespresso.com>
  */
-class CalendarPlus
+class CalendarPlus extends CalendarPlusModule
 {
-
-    private string $plugin_slug;
-
-    private string $version;
-
     private Request $request;
 
     private static array $actions_to_skip = [
@@ -48,17 +43,27 @@ class CalendarPlus
     ];
 
 
-    public function __construct(string $plugin_slug, string $version)
+    /**
+     * @param Request $request
+     * @param string  $plugin_slug The name of this plugin.
+     * @param string  $version     The version of this plugin.
+     */
+    public function __construct(Request $request, string $plugin_slug, string $version)
     {
-        $this->plugin_slug = $plugin_slug;
-        $this->version     = $version;
-        $this->request     = new Request();
+        parent::__construct($plugin_slug, $version);
+        $this->request = $request;
+    }
+
+
+    public function registerHooks(): void
+    {
         if ($this->loadCalendarPlus()) {
             add_action('plugins_loaded', [$this, 'initialize']);
         }
         if (WP_DEBUG) {
             add_action('wp_ajax_events_calendar_plus_reset_migrations', [$this, 'resetMigrations']);
         }
+        add_action('wp_head', [$this, 'printVersion'], 999);
     }
 
 
@@ -110,13 +115,13 @@ class CalendarPlus
         $post_meta = new CalendarPlusPostMeta();
         $post_meta->registerHooks();
 
-        $blocks = new CalendarPlusBlocks($this->pluginSlug());
+        $blocks = new CalendarPlusBlocks($this->pluginSlug(), $this->version());
         $blocks->registerHooks();
 
         $config = new CalendarPlusConfig();
         $config->initialize();
         // load production assets
-        $assets = new Assets($this->version());
+        $assets = new Assets($this->pluginSlug(), $this->version());
         $assets->registerHooks();
 
         $data_handler = new EventDataHandler();
@@ -129,8 +134,40 @@ class CalendarPlus
             : new Frontend($config, $data_handler, $this->pluginSlug(), $this->version());
         $module->registerHooks();
 
-        add_action('wp_head', [$this, 'printVersion'], 999);
+        /**
+         * to load an add-on, add something like the following to its mainfile
+         *  add_action(
+         *      'EventsCalendarPlusInitialization',
+         *      function(
+         *          EventEspresso\CalendarPlus\tools\Request $request,
+         *          EventEspresso\CalendarPlus\api\CalendarPlusConfig $config,
+         *          EventEspresso\CalendarPlus\api\CalendarPlusAPI $api,
+         *          EventEspresso\CalendarPlus\CalendarPlusModule $module, // Admin OR Frontend module
+         *          EventEspresso\CalendarPlus\Assets $assets,
+         *          EventEspresso\CalendarPlus\frontend\EventDataHandler $data_handler,
+         *          EventEspresso\CalendarPlus\CalendarPlusPostType $custom_post,
+         *          EventEspresso\CalendarPlus\CalendarPlusPostMeta $post_meta,
+         *          EventEspresso\CalendarPlus\CalendarPlusBlocks $blocks,
+         *          EventEspresso\CalendarPlus\CalendarPlus $calendar_plus
+         *  ) {
+         *      instantiate add-on using above dependencies as needed
+         *  }
+         */
+        do_action(
+            'EventsCalendarPlusInitialization',
+            $this->request,
+            $config,
+            $api,
+            $module,
+            $assets,
+            $data_handler,
+            $custom_post,
+            $post_meta,
+            $blocks,
+            $this
+        );
     }
+
 
     public function resetMigrations(): void
     {
@@ -139,38 +176,8 @@ class CalendarPlus
     }
 
 
-    /**
-     * The name of the plugin used to uniquely identify it within the context of
-     * WordPress and to define internationalization functionality.
-     *
-     * @return string    The name of the plugin.
-     */
-    public function pluginSlug(): string
-    {
-        return $this->plugin_slug;
-    }
-
-
-    /**
-     * Retrieve the version number of the plugin.
-     *
-     * @return string The version number of the plugin.
-     */
-    public function version(): string
-    {
-        // appended time() to version number for local, dev, or staging environments so that assets are not cached
-        return wp_get_environment_type() !== 'production'
-            ? $this->version . '.' . time()
-            : $this->version;
-    }
-
-
     public function printVersion()
     {
-        printf(
-            '<meta name="%s-version" content="%s">',
-            $this->plugin_slug,
-            $this->version
-        );
+        printf('<meta name="%s-version" content="%s">', $this->pluginSlug(), $this->version());
     }
 }

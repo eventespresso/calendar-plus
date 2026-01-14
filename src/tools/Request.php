@@ -96,26 +96,25 @@ class Request
     }
 
 
-    public function getParam(string $key, string $data_type = 'string')
+    public function getParam(string $key, string $data_type = 'string', $default = null)
     {
-        if (! isset($this->get_params[ $key ])) {
-            return null;
-        }
-        return $this->sanitizeParam($this->get_params[ $key ], $data_type);
+        return isset($this->get_params[ $key ])
+            ? $this->sanitizeParam($this->get_params[ $key ], $data_type)
+            : $default;
     }
 
 
-    public function postParam(string $key, string $data_type = 'string')
+    public function postParam(string $key, string $data_type = 'string', $default = null)
     {
-        if (! isset($this->post_params[ $key ])) {
-            return null;
-        }
-        return $this->sanitizeParam($this->post_params[ $key ], $data_type);
+        return isset($this->post_params[ $key ])
+            ? $this->sanitizeParam($this->post_params[ $key ], $data_type)
+            : $default;
     }
 
 
     private function sanitizeParam($value, string $data_type)
     {
+        $value = wp_unslash(trim($value));
         switch ($data_type) {
             case 'int':
             case 'integer':

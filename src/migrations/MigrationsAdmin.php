@@ -3,6 +3,7 @@
 namespace EventEspresso\CalendarPlus\migrations;
 
 
+use EventEspresso\CalendarPlus\CalendarPlusModule;
 use EventEspresso\CalendarPlus\tools\Request;
 use RuntimeException;
 use Throwable;
@@ -17,7 +18,7 @@ use Throwable;
  * @subpackage CalendarPlus/admin
  * @author     Event Espresso <support@eventespresso.com>
  */
-class MigrationsAdmin
+class MigrationsAdmin extends CalendarPlusModule
 {
     private MigrationsManager $migrations_manager;
 
@@ -25,11 +26,7 @@ class MigrationsAdmin
 
     private string $assets_url;
 
-    private string $plugin_slug;
-
     private string $templates;
-
-    private string $version;
 
 
     /**
@@ -42,9 +39,8 @@ class MigrationsAdmin
      */
     public function __construct(Request $request, string $plugin_slug, string $version)
     {
+        parent::__construct($plugin_slug, $version);
         $this->request     = $request;
-        $this->plugin_slug = $plugin_slug;
-        $this->version     = $version;
         $this->assets_url  = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/migrations/assets';
         $this->templates   = EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/migrations/templates';
     }
@@ -204,20 +200,20 @@ class MigrationsAdmin
     public function enqueueAdminScriptsAndStyles(string $page): void
     {
         wp_enqueue_style(
-            $this->plugin_slug,
+            $this->pluginSlug(),
             "$this->assets_url/calendar-plus-migrations.css",
             [],
-            $this->version
+            $this->version()
         );
         if ($page !== 'toplevel_page_events-calendar-plus-migrations') {
             // only enqueue JS on the Calendar Plus Admin Migrations page
             return;
         }
         wp_enqueue_script(
-            $this->plugin_slug,
+            $this->pluginSlug(),
             "$this->assets_url/calendar-plus-migrations.js",
             [],
-            $this->version,
+            $this->version(),
             ['in_footer' => true]
         );
     }

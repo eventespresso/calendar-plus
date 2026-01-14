@@ -3,6 +3,8 @@
 namespace EventEspresso\CalendarPlus\admin;
 
 use EventEspresso\CalendarPlus\api\CalendarPlusConfig;
+use EventEspresso\CalendarPlus\Assets;
+use EventEspresso\CalendarPlus\CalendarPlusModule;
 use EventEspresso\CalendarPlus\CalendarPlusPostType;
 use EventEspresso\CalendarPlus\frontend\EventDataHandler;
 
@@ -16,19 +18,19 @@ use EventEspresso\CalendarPlus\frontend\EventDataHandler;
  * @subpackage CalendarPlus/admin
  * @author     Event Espresso <support@eventespresso.com>
  */
-class Admin
+class Admin extends CalendarPlusModule
 {
+    public const CSS_BODY_CLASS = 'events-calendar-plus-admin';
+
+    public const MENU_PARENT_SLUG = 'edit.php?post_type=' . CalendarPlusPostType::EVENT;
+
     private CalendarPlusConfig $config;
 
     private EventDataHandler $data_handler;
 
     private string $assets_url;
 
-    private string $plugin_slug;
-
     private string $templates;
-
-    private string $version;
 
 
     /**
@@ -46,10 +48,9 @@ class Admin
         string $plugin_slug,
         string $version
     ) {
+        parent::__construct($plugin_slug, $version);
         $this->config       = $config;
         $this->data_handler = $data_handler;
-        $this->plugin_slug  = $plugin_slug;
-        $this->version      = $version;
         $this->assets_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/admin/assets';
         $this->templates    = EVENTS_CALENDAR_PLUS_BASE_PATH . 'src/admin/templates';
     }
@@ -69,10 +70,10 @@ class Admin
         $timezone_string = get_option('timezone_string', '');
         if (empty($timezone_string)) {
             $timezone_string = get_option('gmt_offset', 0);
-            if (is_numeric($timezone_string)){
-                $sign = $timezone_string >= 0 ? '+' : '-';
-                $hours = (int) $timezone_string;
-                $minutes = (int) round(abs($timezone_string - $hours) * 60);
+            if (is_numeric($timezone_string)) {
+                $sign            = $timezone_string >= 0 ? '+' : '-';
+                $hours           = (int) $timezone_string;
+                $minutes         = (int) round(abs($timezone_string - $hours) * 60);
                 $timezone_string = sprintf('%s%d:%02d', $sign, $hours, $minutes);
             }
             add_action(
@@ -89,7 +90,7 @@ class Admin
                         '</a>'
                     ),
                     [
-                        'type' => 'error',
+                        'type'        => 'error',
                         'dismissible' => true,
                     ]
                 )
@@ -101,33 +102,34 @@ class Admin
     public function addMenuPage(): void
     {
         add_submenu_page(
-            'edit.php?post_type=' . CalendarPlusPostType::EVENT,
+            Admin::MENU_PARENT_SLUG,
             __('Calendar ✚  Settings', 'events-calendar-plus'),
             __('Calendar ✚  Settings', 'events-calendar-plus'),
             'manage_options',
             'events-calendar-plus-settings',
-            [$this, 'settingsAdminPage'],
-            5
+            [$this, 'settingsAdminPage']
         );
-        add_submenu_page(
-            'edit.php?post_type=' . CalendarPlusPostType::EVENT,
-            __('Help & How To', 'events-calendar-plus'),
-            __('Help & How To', 'events-calendar-plus'),
+        $support_hook = add_submenu_page(
+            Admin::MENU_PARENT_SLUG,
+            __('C+ Help & How To', 'events-calendar-plus'),
+            __('C+ Help & How To', 'events-calendar-plus'),
             'read',
             'events-calendar-plus-support',
-            [$this, 'supportAdminPage'],
-            6
+            [$this, 'supportAdminPage']
         );
+        Admin::addAdminBodyClass($support_hook);
     }
 
 
     public function settingsAdminPage(): void
     {
+
         if (! current_user_can('manage_options')) {
             wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'events-calendar-plus'));
         }
         require_once "$this->templates/calendar-plus-admin-settings.php";
     }
+
 
     public function supportAdminPage(): void
     {
@@ -138,28 +140,53 @@ class Admin
     public function enqueueAdminScriptsAndStyles(string $page): void
     {
         wp_enqueue_style(
-            $this->plugin_slug,
+            $this->pluginSlug(),
             "$this->assets_url/calendar-plus-admin.css",
             [],
-            $this->version
+            $this->version()
         );
         if ($page !== 'calendar-event_page_events-calendar-plus-settings') {
             // only enqueue on the Calendar Plus Admin Settings page
             return;
         }
         // barista scripts and styles
-        wp_enqueue_style('calendarPlusAdmin');
-        wp_enqueue_script('calendarPlusAdmin');
+        wp_enqueue_style(Assets::HANDLE_ADMIN);
+        wp_enqueue_script(Assets::HANDLE_ADMIN);
         // data for the above script
         wp_localize_script(
-            'calendarPlusAdmin',
+            Assets::HANDLE_ADMIN,
             'calendarPlusSettings',
-            $this->config->getSettings()
+            $this->config->getSettings(true)
         );
         wp_localize_script(
-            'calendarPlusAdmin',
+            Assets::HANDLE_ADMIN,
             'eventCategories',
             $this->data_handler->getEventCategories()
+        );
+    }
+
+
+    public static function addAdminBodyClass(string $hook_suffix): void
+    {
+        if (! str_contains($hook_suffix, 'events-calendar-plus')) {
+            return;
+        }
+
+        add_action(
+            "load-$hook_suffix",
+            function (): void {
+                add_filter(
+                    'admin_body_class',
+                    function (string $classes): string {
+                        // ensure spacing is correct and avoid duplicates
+                        $classes_array = preg_split('/\s+/', trim($classes)) ?: [];
+                        if (! in_array(Admin::CSS_BODY_CLASS, $classes_array, true)) {
+                            $classes_array[] = Admin::CSS_BODY_CLASS;
+                        }
+                        return implode(' ', array_filter($classes_array));
+                    }
+                );
+            }
         );
     }
 }

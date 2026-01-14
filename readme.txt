@@ -3,12 +3,12 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 Requires at least: 6.5
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Display a beautiful events calendar with customizable views, coloring, filtering, date formats, images, and optimized for mobile on your own website.
 
@@ -187,6 +187,15 @@ Please see the changelog for the complete list of changes in this release.
 Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
+
+= [1.0.11] 2026-01-14 =
+#### Added
+ - [Add support for Events Calendar Plus Anywhere (#2070)]
+
+#### Fixed
+ - [Fix events not showing on end of month (#2068)]
+ - [Added inputs For editing filter labels applied to Calendar+ filters (Barista#1469) (#2071)]
+
 
 = [1.0.10] 2025-10-07 =
 

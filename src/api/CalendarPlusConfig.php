@@ -111,15 +111,19 @@ class CalendarPlusConfig
 
 
     /**
+     * @param bool $add_nonce
      * @return array
      */
-    public function getSettings(): array
+    public function getSettings(bool $add_nonce = false): array
     {
-        return [
-                'nonce'  => wp_create_nonce('wp_rest'),
+        $settings = [
                 'apiUrl' => CalendarPlusAPI::endpointURL(),
                 'settingsApiUrl' => CalendarPlusAPI::endpointURL(true),
             ] + $this->settings;
+        if ($add_nonce) {
+            $settings['nonce'] = wp_create_nonce(CalendarPlusAPI::NONCE_ACTION_UPDATE_SETTINGS);
+        }
+        return $settings;
     }
 
 

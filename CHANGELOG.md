@@ -5,10 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Releases
+### [1.0.11]
+#### Added
+ - [Add support for Events Calendar Plus Anywhere (#2070)](https://github.com/eventespresso/cafe/pull/2070)
+
+#### Fixed
+ - [Fix events not showing on end of month (#2068)](https://github.com/eventespresso/cafe/pull/2068)
+ - [Added inputs For editing filter labels applied to Calendar+ filters (Barista#1469) (#2071)](https://github.com/eventespresso/cafe/pull/2071)
+
 ### [1.0.10]
+#### Fixed
  - [Missing file fix]
 
 ### [1.0.9]
+#### Fixed
  - [Fixed Z Index Issue Of Popover For Horizontal Filters (Barista#1439) (#1969)](https://github.com/eventespresso/cafe/pull/1969)
  - [New Events Calendar Plus Shortcodes plugin (#1752)](https://github.com/eventespresso/cafe/pull/1752)
  - [Filter Customization and Shortcodes (Barista#1381) (#1981)](https://github.com/eventespresso/cafe/pull/1981)

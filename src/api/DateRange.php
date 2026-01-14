@@ -32,17 +32,27 @@ class DateRange
     }
 
 
+    private static function setStartOfDay(DateTime $date): void
+    {
+        $date->setTime(0, 0, 0);
+    }
+
+
+    private static function setEndOfDay(DateTime $date): void
+    {
+        $date->setTime(23, 59, 59);
+    }
+
+
     /**
      * @throws Exception
      */
     public static function createForCurrentMonth(): DateRange
     {
         $start = new DateTime('first day of this month');
-        // set start time to 00:00:00
-        $start->setTime(0, 0);
-        $end   = new DateTime('last day of this month');
-        // set end time to 23:59:59
-        $end->setTime(23, 59, 59);
+        self::setStartOfDay($start);
+        $end = new DateTime('last day of this month');
+        self::setEndOfDay($end);
         return new DateRange($start, $end);
     }
 
@@ -81,6 +91,8 @@ class DateRange
                 esc_html__('Invalid date range end', 'events-calendar-plus'),
             );
         }
+
+        self::setEndOfDay($end);
 
         return new DateRange($start, $end);
     }

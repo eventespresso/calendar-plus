@@ -7,7 +7,7 @@ use WP_Scripts;
 use WP_Styles;
 use _WP_Dependency;
 
-class Assets
+class Assets extends CalendarPlusModule
 {
     private const PATH         = 'src/assets';
 
@@ -16,6 +16,10 @@ class Assets
     private const FILE_EXT_JS  = '.js';
 
     private const FILE_EXT_PHP = '.php';
+
+    public const HANDLE_ADMIN  = 'calendarPlusAdmin';
+
+    public const HANDLE_PUBLIC = 'calendarPlus';
 
     private string $barista_dir;
 
@@ -30,15 +34,14 @@ class Assets
 
     private array $manifest = [];
 
-    private string $version;
-
 
     /**
+     * @param string $plugin_slug
      * @param string $version
      */
-    public function __construct(string $version)
+    public function __construct(string $plugin_slug, string $version)
     {
-        $this->version     = $version;
+        parent::__construct($plugin_slug, $version);
         $this->barista_dir = defined('EE_BARISTA_DIR') ? EE_BARISTA_DIR : '';
         $this->barista_url = defined('EE_BARISTA_URL') ? EE_BARISTA_URL : '';
     }
@@ -86,7 +89,7 @@ class Assets
      */
     protected function isCalendarPlusAsset(string $asset_filename): string
     {
-        return strpos($asset_filename, 'calendarPlus') === 0;
+        return strpos($asset_filename, Assets::HANDLE_PUBLIC) === 0;
     }
 
 
@@ -250,7 +253,7 @@ class Assets
                 $handle,
                 $asset_path,
                 $dependencies ?? [],
-                $version ?? $this->version,
+                $version ?? $this->version(),
                 ['in_footer' => true]
             );
 
@@ -280,7 +283,7 @@ class Assets
                     $handle,
                     $this->assetsPath() . $asset_files[ $entry_point . Assets::FILE_EXT_CSS ],
                     [],
-                    $this->version,
+                    $this->version(),
                     'all'
                 );
                 if ($style instanceof _WP_Dependency) {
@@ -293,7 +296,7 @@ class Assets
 
     public function registerDependencies()
     {
-        $wp_scripts = wp_scripts();
+        global $wp_scripts;
         // Enqueue all the registered scripts and styles.
         foreach ($this->assets['js'] as $script) {
             $this->registerJsDependencies($wp_scripts, $script);
@@ -306,7 +309,7 @@ class Assets
         foreach ($asset->deps as $handle) {
             $js_asset = $wp_scripts->query($handle);
             if (
-                ($asset->handle === 'calendarPlusAdmin' || $asset->handle === 'calendarPlus')
+                ($asset->handle === Assets::HANDLE_ADMIN || $asset->handle === Assets::HANDLE_PUBLIC)
                 && $js_asset === false
             ) {
                 $dependency_path = Assets::PATH . "/vendor/$handle.min.js";
@@ -315,7 +318,7 @@ class Assets
                         $handle,
                         EVENTS_CALENDAR_PLUS_BASE_URL . $dependency_path,
                         [],
-                        $this->version,
+                        $this->version(),
                         ['in_footer' => true]
                     );
                 }

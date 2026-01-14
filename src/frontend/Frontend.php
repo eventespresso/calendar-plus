@@ -3,6 +3,8 @@
 namespace EventEspresso\CalendarPlus\frontend;
 
 use EventEspresso\CalendarPlus\api\CalendarPlusConfig;
+use EventEspresso\CalendarPlus\Assets;
+use EventEspresso\CalendarPlus\CalendarPlusModule;
 use EventEspresso\CalendarPlus\CalendarPlusPostType;
 use Exception;
 use WP_Error;
@@ -17,17 +19,13 @@ use WP_Error;
  * @subpackage  CalendarPlus/frontend
  * @author      Brent Christensen
  */
-class Frontend
+class Frontend extends CalendarPlusModule
 {
     private CalendarPlusConfig $config;
 
     private EventDataHandler $data_handler;
 
     private string $assets_url;
-
-    private string $plugin_slug;
-
-    private string $version;
 
 
     /**
@@ -45,10 +43,9 @@ class Frontend
         string $plugin_slug,
         string $version
     ) {
+        parent::__construct($plugin_slug, $version);
         $this->config       = $config;
         $this->data_handler = $data_handler;
-        $this->plugin_slug  = $plugin_slug;
-        $this->version      = $version;
         $this->assets_url   = EVENTS_CALENDAR_PLUS_BASE_URL . 'src/frontend/assets';
     }
 
@@ -89,23 +86,23 @@ class Frontend
     {
         if (is_singular(CalendarPlusPostType::EVENT)) {
             wp_enqueue_style(
-                $this->plugin_slug,
+                $this->pluginSlug(),
                 "$this->assets_url/calendar-plus-event-post.css",
                 [],
-                $this->version
+                $this->version()
             );
         }
         // barista scripts and styles
-        wp_enqueue_style('calendarPlus');
-        wp_enqueue_script('calendarPlus');
+        wp_enqueue_style(Assets::HANDLE_PUBLIC);
+        wp_enqueue_script(Assets::HANDLE_PUBLIC);
         // data for the above script
         wp_localize_script(
-            'calendarPlus',
+            Assets::HANDLE_PUBLIC,
             'calendarPlusSettings',
             $this->config->getSettings()
         );
         wp_localize_script(
-            'calendarPlus',
+            Assets::HANDLE_PUBLIC,
             'calendarPlusData',
             $this->data_handler->getEventDataForCurrentMonth()
         );
