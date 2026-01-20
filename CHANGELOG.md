@@ -5,6 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Releases
+
+### 1.0.12
+
+
+
+#### Changed
+ - [Removed Eventespresso i18n Dependencies From Calendar+ (Barista#1479) (#2075)](https://github.com/eventespresso/cafe/pull/2075)
+
+
+
+
+
+### [1.0.12]
+
+#### Fixed
+ - [Removed Eventespresso i18n Dependencies (#2075)](https://github.com/eventespresso/cafe/pull/2075)
+
 ### [1.0.11]
 #### Added
  - [Add support for Events Calendar Plus Anywhere (#2070)](https://github.com/eventespresso/cafe/pull/2070)

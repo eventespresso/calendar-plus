@@ -3,8 +3,8 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.11
-Requires at least: 6.5
+Stable tag: 1.0.12
+Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
 License: GPLv3
@@ -25,53 +25,53 @@ Looking for additional features like recurring events, electronic tickets, ticke
 
 Whether your event calendar is new and growing or your events calendar is big and full, Calendar+ can make any organization look good; small businesses, musicians, venues, restaurants, non-profits, schools, associations, clubs, fundraisers, agencies, etc. all look better and can reach their audience better with Calendar+
 
-## ⭐️ Features
+## :star:️ Features
 
-✔️ Quickly create events (Title, start/end date/time, description, featured image)
-✔️ Enable or disable views with tooltips (month, week, day views, each mobile optimized)
-✔️ Filters (keyword, venue, category, tag, location)
-✔️ Edit text strings for easy translation
-✔️ Enable/Disable display view settings
-✔️ Set Default view
-✔️ Keep/hide filters on mobile devices
-✔️ Enable/Disable thumbnails on the calendar
-✔️ Enable/Disable Tooltip/Popover
-✔️ Edit text labels (easy translation)
-✔️ Choose from multiple date/time formats
-✔️ Easily personalize your calendar with over 20 customizable color settings using the built-in color picker
-✔️ and more!
-
-
-## ☕️ Event Espresso Decaf Includes:
-
-✔️ Saved venues
-✔️ Widget: Upcoming events list
-✔️ Event Taxonomies (Categories & Tags)
-✔️ Google Calendar and iCal exporting
-✔️ WP REST API endpoints
-✔️ Tested on the latest versions of WordPress and major theme frameworks such as Avada, Divi, Enfold, Genesis, and many more.
-✔️ Extensive template tags for customization
-✔️ Hooks & filters galore
-✔️ Debug mode for developers
-✔️ Dozens of add-on plugin extensions
-
-## ☕️☕️ Event Espresso Premium Includes:
-
-✔️ Collect attendee information for each event ticket or registration sold
-✔️ Sell tickets and registrations to groups
-✔️ Create multiple dates for the same event
-✔️ Create custom registration forms
-✔️ Create conditional registration form questions
-✔️ Ask specific questions in the registration form depending on the attendees choose
-✔️ Distribute digital tickets
-✔️ Scan QR code tickets and validate them at the door by using our mobile apps
-✔️ Accept payments with Square, Stripe, and more payment options
-✔️ Automate and customize confirmation emails to staff and attendees
-✔️ Google Maps
-✔️ and much more.
+:heavy_check_mark: Quickly create events (Title, start/end date/time, description, featured image)
+:heavy_check_mark: Enable or disable views with tooltips (month, week, day views, each mobile optimized)
+:heavy_check_mark: Filters (keyword, venue, category, tag, location)
+:heavy_check_mark: Edit text strings for easy translation
+:heavy_check_mark: Enable/Disable display view settings
+:heavy_check_mark: Set Default view
+:heavy_check_mark: Keep/hide filters on mobile devices
+:heavy_check_mark: Enable/Disable thumbnails on the calendar
+:heavy_check_mark: Enable/Disable Tooltip/Popover
+:heavy_check_mark: Edit text labels (easy translation)
+:heavy_check_mark: Choose from multiple date/time formats
+:heavy_check_mark: Easily personalize your calendar with over 20 customizable color settings using the built-in color picker
+:heavy_check_mark: and more!
 
 
-== 🛟 Documentation ==
+## :coffee:️ Event Espresso Decaf Includes:
+
+:heavy_check_mark: Saved venues
+:heavy_check_mark: Widget: Upcoming events list
+:heavy_check_mark: Event Taxonomies (Categories & Tags)
+:heavy_check_mark: Google Calendar and iCal exporting
+:heavy_check_mark: WP REST API endpoints
+:heavy_check_mark: Tested on the latest versions of WordPress and major theme frameworks such as Avada, Divi, Enfold, Genesis, and many more.
+:heavy_check_mark: Extensive template tags for customization
+:heavy_check_mark: Hooks & filters galore
+:heavy_check_mark: Debug mode for developers
+:heavy_check_mark: Dozens of add-on plugin extensions
+
+## :coffee:️:coffee:️ Event Espresso Premium Includes:
+
+:heavy_check_mark: Collect attendee information for each event ticket or registration sold
+:heavy_check_mark: Sell tickets and registrations to groups
+:heavy_check_mark: Create multiple dates for the same event
+:heavy_check_mark: Create custom registration forms
+:heavy_check_mark: Create conditional registration form questions
+:heavy_check_mark: Ask specific questions in the registration form depending on the attendees choose
+:heavy_check_mark: Distribute digital tickets
+:heavy_check_mark: Scan QR code tickets and validate them at the door by using our mobile apps
+:heavy_check_mark: Accept payments with Square, Stripe, and more payment options
+:heavy_check_mark: Automate and customize confirmation emails to staff and attendees
+:heavy_check_mark: Google Maps
+:heavy_check_mark: and much more.
+
+
+== :ring_buoy: Documentation ==
 
 All of our documentation can be found in [our Knowledgebase](https://calendarplus.io).
 
@@ -81,12 +81,12 @@ If you need help, post your questions in the [WordPress.org forum](https://wordp
 
 Our Free Plugins:
 
-☕️ [Event Espresso](https://wordpress.org/plugins/event-espresso-decaf)
+:coffee:️ [Event Espresso](https://wordpress.org/plugins/event-espresso-decaf)
 
 Our Premium Plugins and Services:
 
-☕️ [Events Espresso](https://eventespresso.com)
-🎓 [Event Smart](https://eventsmart.com) (service)
+:coffee:️ [Events Espresso](https://eventespresso.com)
+:mortar_board: [Event Smart](https://eventsmart.com) (service)
 
 == Installation ==
 
@@ -99,7 +99,7 @@ Manual Installation:
 - Go to Plugins > Add New > Upload Plugin, select the ZIP file, and click Install Now
 - Activate the plugin
 
-That's it! Just configure your settings as you see fit, and you're on your way to creating events in style.
+That’s it! Just configure your settings as you see fit, and you’re on your way to creating events in style.
 
 Display the Calendar+ Calendar:
 To display a calendar, add the [EVENTS_CALENDAR_PLUS] shortcode on any WordPress page or post.
@@ -152,25 +152,25 @@ To display a calendar, add the [EVENTS_CALENDAR_PLUS] shortcode on any WordPress
 
 == Frequently Asked Questions ==
 
-= Are there any troubleshooting steps you'd suggest I try that might resolve my issue before I post a new thread? =
+= Are there any troubleshooting steps you’d suggest I try that might resolve my issue before I post a new thread? =
 
-First, make sure that you're running the latest version of Calendar+.
+First, make sure that you’re running the latest version of Calendar+.
 
-The most common issues we see are either plugin or theme conflicts. You can test if a plugin or theme is conflicting by manually deactivating other plugins until just Calendar+ is running on your site. If the issue persists from there, revert to the default [Twenty Twenty](https://wordpress.org/themes/twentytwenty/) theme. If the issue is resolved after deactivating a specific plugin or your theme, you'll know that is the source of the conflict.
+The most common issues we see are either plugin or theme conflicts. You can test if a plugin or theme is conflicting by manually deactivating other plugins until just Calendar+ is running on your site. If the issue persists from there, revert to the default [Twenty Twenty](https://wordpress.org/themes/twentytwenty/) theme. If the issue is resolved after deactivating a specific plugin or your theme, you’ll know that is the source of the conflict.
 
 While we can’t guarantee 100% compatibility with every plugin or theme, we’ll do our best to help and collaborate with developers if needed.
 
-= I'm still stuck. Where do I go to file a bug or ask a question? =
+= I’m still stuck. Where do I go to file a bug or ask a question? =
 
-Users of Calendar+ should post their questions in the plugin's [WordPress.org forum](https://wordpress.org/support/plugin/event-calendar-plus), which we visit about once a week.
+Users of Calendar+ should post their questions in the plugin’s [WordPress.org forum](https://wordpress.org/support/plugin/event-calendar-plus), which we visit about once a week.
 
-= What's the difference between Event Espresso and Calendar+? =
+= What’s the difference between Event Espresso and Calendar+? =
 
 Event Espresso is a comprehensive event management, registration, and ticketing plugin for WordPress. Calendar+ is a free WordPress plugin that integrates with Event Espresso and other event data sources, allowing you to display events in a visually appealing and accessible format.
 
 = How do I sell tickets to events on my calendar? =
 
-You'll want to use [Event Espresso](https://wordpress.org/plugins/event-espresso-decaf/) plugin (free or premium) for selling tickets and registrations. This free plugin works alongside Event Espresso and lets you create RSVPs, registrations and tickets for events. Event Espresso integrates with PayPal, Stripe, Square, etc. so you can collect payments for tickets.
+You’ll want to use [Event Espresso](https://wordpress.org/plugins/event-espresso-decaf/) plugin (free or premium) for selling tickets and registrations. This free plugin works alongside Event Espresso and lets you create RSVPs, registrations and tickets for events. Event Espresso integrates with PayPal, Stripe, Square, etc. so you can collect payments for tickets.
 
 = Can I have more than one calendar on my site? =
 
@@ -187,6 +187,11 @@ Please see the changelog for the complete list of changes in this release.
 Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
+
+= [1.0.12] 2026-01-16 =
+#### Fixed
+ - [Removed Eventespresso i18n Dependencies (#2075)]
+
 
 = [1.0.11] 2026-01-14 =
 #### Added
