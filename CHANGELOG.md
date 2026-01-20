@@ -6,16 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Releases
 
+### 1.0.13
+
+#### Changed
+ - Removed duplicate assets
+
 ### 1.0.12
-
-
 
 #### Changed
  - [Removed Eventespresso i18n Dependencies From Calendar+ (Barista#1479) (#2075)](https://github.com/eventespresso/cafe/pull/2075)
-
-
-
-
 
 ### [1.0.12]
 

@@ -3,7 +3,7 @@
 Contributors: eventespresso, garthkoyle, pebblo, charliespider, mohsinsr, alexkuc, knazart
 Tags: events, calendar, event, schedule, organizer
 Donate link: https://calendarplus.io
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -187,6 +187,10 @@ Please see the changelog for the complete list of changes in this release.
 Remember to always make a backup of your database and files before updating!
 
 == Changelog ==
+
+= [1.0.13] 2026-01-20 =
+#### Fixed
+ - Removed duplicate assets
 
 = [1.0.12] 2026-01-16 =
 #### Fixed
